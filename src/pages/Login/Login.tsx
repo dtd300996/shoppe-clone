@@ -1,8 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import { login } from 'src/api/auth.api'
 import Input from 'src/components/Input'
+import { ResponseApi } from 'src/types/utils.type'
 import { EmailPasswordSchema, emailPasswordSchema } from 'src/utils/rules'
+import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
 type FormState = EmailPasswordSchema
 
@@ -10,13 +14,38 @@ export default function Login() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors }
   } = useForm<FormState>({
     resolver: yupResolver(emailPasswordSchema)
   })
 
+  const loginMutation = useMutation({
+    mutationFn: (body: EmailPasswordSchema) => login(body)
+  })
+
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
+    loginMutation.mutate(data, {
+      onSuccess: (data) => {
+        console.log({ data })
+      },
+      onError: (error) => {
+        if (isAxiosUnprocessableEntityError<ResponseApi<EmailPasswordSchema>>(error)) {
+          const formError = error?.response?.data?.data
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              const newKey = key as keyof EmailPasswordSchema
+              const msg = formError[newKey]
+
+              setError(newKey, {
+                message: msg,
+                type: 'Server'
+              })
+            })
+          }
+        }
+      }
+    })
   })
 
   return (
