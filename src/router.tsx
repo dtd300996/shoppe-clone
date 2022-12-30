@@ -2,6 +2,7 @@ import Login from './pages/Login'
 import Products from './pages/Producs'
 import Register from './pages/Resister'
 import ResisterLayout from './Layout/ResisterLayout'
+import MainLayout from './Layout/MainLayout'
 
 export interface RouterElementType {
   path: string
@@ -12,7 +13,11 @@ export interface RouterElementType {
 const router: RouterElementType[] = [
   {
     path: '/',
-    element: <Products />
+    element: (
+      <MainLayout>
+        <Products />
+      </MainLayout>
+    )
   },
   {
     path: '/login',

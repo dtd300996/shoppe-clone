@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ReactComponent as Logo } from 'src/assets/shopee.svg'
+import { LogoSvg } from 'src/assets/icons'
 
 export default function RegisterHeader() {
   return (
@@ -8,7 +8,7 @@ export default function RegisterHeader() {
         <nav className='flex items-end'>
           <Link to='/'>
             <span>
-              <Logo className='h8 fill-orange lg:h-11' />
+              <LogoSvg className='h-8 fill-orange lg:h-11' />
             </span>
           </Link>
           <div className='ml-5 text-xl lg:text-2xl'>Register</div>
