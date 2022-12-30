@@ -2,9 +2,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import Input from 'src/components/Input'
-import { LoginSchema, loginSchema } from 'src/utils/rules'
+import { EmailPasswordSchema, emailPasswordSchema } from 'src/utils/rules'
 
-type FormState = LoginSchema
+type FormState = EmailPasswordSchema
 
 export default function Login() {
   const {
@@ -12,7 +12,7 @@ export default function Login() {
     handleSubmit,
     formState: { errors }
   } = useForm<FormState>({
-    resolver: yupResolver(loginSchema)
+    resolver: yupResolver(emailPasswordSchema)
   })
 
   const onSubmit = handleSubmit((data) => {
