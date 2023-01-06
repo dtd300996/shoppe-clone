@@ -25,7 +25,7 @@ export default function Header() {
             className='ml-6 flex cursor-pointer items-center py-1  hover:text-gray-300'
             renderPopover={
               <div className='flex flex-col py-3 px-4'>
-                <Link to='/' className='py-2 px-3 text-left hover:text-orange'>
+                <Link to='/profile' className='py-2 px-3 text-left hover:text-orange'>
                   My account
                 </Link>
                 <Link to='/' className='py-2 px-3 text-left hover:text-orange'>
@@ -169,7 +169,6 @@ export default function Header() {
                 </div>
               }
               as={'span'}
-              initialOpen={true}
             >
               <Link to='/cart' className=''>
                 <CartSvg className='h-8 w-8' />
