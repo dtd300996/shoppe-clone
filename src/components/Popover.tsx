@@ -1,5 +1,5 @@
 import { ElementType, useRef, useState } from 'react'
-import { FloatingPortal, useFloating, arrow, shift, offset } from '@floating-ui/react'
+import { FloatingPortal, useFloating, arrow, shift, offset, Placement } from '@floating-ui/react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 interface Props {
@@ -8,6 +8,7 @@ interface Props {
   className?: string
   as?: ElementType
   initialOpen?: boolean
+  placement?: Placement
 }
 
 export default function Popover({
@@ -15,21 +16,28 @@ export default function Popover({
   renderPopover,
   className,
   as: Element = 'div',
-  initialOpen = false
+  initialOpen = false,
+  placement = 'bottom-end'
 }: Props) {
   const [open, setOpen] = useState(initialOpen)
 
   const arrowRef = useRef<HTMLElement>(null)
   const { x, y, reference, floating, strategy, middlewareData } = useFloating({
-    middleware: [offset(6), shift(), arrow({ element: arrowRef })]
+    middleware: [offset(6), shift(), arrow({ element: arrowRef })],
+    placement
   })
 
-  const showPopover = () => setOpen(true)
-  const hidePopover = () => setOpen(false)
+  const showPopover = () => {
+    setOpen(true)
+  }
+  const hidePopover = () => {
+    setOpen(false)
+  }
 
   const variants = {
-    open: { opacity: 1, scale: 1, transformOrigin: '50% 0%' },
-    close: { opacity: 0, scale: 0 }
+    open: { opacity: 1, scale: 1 },
+    close: { opacity: 0, scale: 0 },
+    duration: 0.2
   }
 
   return (
@@ -40,10 +48,10 @@ export default function Popover({
         <AnimatePresence>
           {open && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
+              initial={variants.close}
               animate={variants.open}
               exit={variants.close}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: variants.duration }}
               ref={floating}
               style={{
                 position: strategy,
@@ -60,10 +68,6 @@ export default function Popover({
                   style={{ left: middlewareData.arrow?.x, top: middlewareData.arrow?.y }}
                 />
                 {renderPopover}
-                {/* <div className='flex flex-col py-2 px-3'>
-                  <button className='py-2 px-3 hover:text-orange'>Vietnamese</button>
-                  <button className='py-2 px-3 hover:text-orange'>English</button>
-                </div> */}
               </div>
             </motion.div>
           )}
