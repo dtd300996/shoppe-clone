@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
+import path from 'src/constants/path'
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -10,7 +11,7 @@ import { isAxiosError } from 'src/utils/utils'
 import Popover from '../Popover'
 
 export default function Header() {
-  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const { isAuthenticated, profile, setAuthContext } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: logout
   })
@@ -19,7 +20,9 @@ export default function Header() {
     logoutMutation.mutate(undefined, {
       onSuccess: (res) => {
         toast.success(res.data.message)
-        setIsAuthenticated(false)
+        // setIsAuthenticated(false)
+        // setProfile(null)
+        setAuthContext(null)
       },
       onError: (error) => {
         if (isAxiosError<ErrorResponse<unknown>>(error)) {
@@ -42,7 +45,7 @@ export default function Header() {
                 <button className='py-2 px-3 text-left hover:text-orange'>English</button>
               </div>
             }
-            className='flex cursor-pointer items-center py-1 hover:text-gray-300'
+            className='flex cursor-pointer items-center py-1 hover:text-white/70'
           >
             <GlobalSvg className='h-5 w-5' />
             <span className='mx-1'>Vietnamese</span>
@@ -51,10 +54,10 @@ export default function Header() {
 
           {isAuthenticated && (
             <Popover
-              className='ml-6 flex cursor-pointer items-center py-1  hover:text-gray-300'
+              className='ml-6 flex cursor-pointer items-center py-1  hover:text-white/70'
               renderPopover={
                 <div className='flex flex-col py-3 px-4'>
-                  <Link to='/profile' className='py-2 px-3 text-left hover:text-orange'>
+                  <Link to={path.profile} className='py-2 px-3 text-left hover:text-orange'>
                     My account
                   </Link>
                   <Link to='/' className='py-2 px-3 text-left hover:text-orange'>
@@ -74,16 +77,16 @@ export default function Header() {
                   className='h-full w-full rounded-full object-cover'
                 />
               </div>
-              <div>DTD96</div>
+              <div>{profile?.name || profile?.email}</div>
             </Popover>
           )}
           {!isAuthenticated && (
             <div className='flex items-center'>
-              <Link to={'/register'} className='mx-3 capitalize hover:text-white/70'>
+              <Link to={path.register} className='mx-3 capitalize hover:text-white/70'>
                 Register
               </Link>
               <div className='h-4 border-r-[1px] border-r-white/40' />
-              <Link to={'/login'} className='mx-3 capitalize hover:text-white/70'>
+              <Link to={path.login} className='mx-3 capitalize hover:text-white/70'>
                 Login
               </Link>
             </div>
@@ -213,7 +216,7 @@ export default function Header() {
               }
               as={'span'}
             >
-              <Link to='/cart' className=''>
+              <Link to={path.cart} className=''>
                 <CartSvg className='h-8 w-8' />
               </Link>
             </Popover>

@@ -3,7 +3,8 @@ import axios, { AxiosError, AxiosInstance } from 'axios'
 import { ErrorResponse } from './../types/utils.type'
 import { toast } from 'react-toastify'
 import { isAxiosUnprocessableEntityError } from './utils'
-import { clearAccessTokenFromLS, getAccessTokenFromLS, saveAccessTokenToLS } from './auth'
+import { clearAuthFromLS, getAccessTokenFromLS, setAccessTokenToLS, setProfileToLS } from './auth'
+import path from 'src/constants/path'
 // import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 
 class Http {
@@ -38,12 +39,15 @@ class Http {
     this.instance.interceptors.response.use(
       (res) => {
         const { url } = res.config
-        if (url === '/login' || url === '/register') {
-          this.accessToken = (res.data as AuthResponse)?.data.access_token
-          saveAccessTokenToLS(this.accessToken)
-        } else if (url === '/logout') {
+        if (url === path.login || url === path.register) {
+          const data = (res.data as AuthResponse)?.data
+          this.accessToken = data.access_token
+
+          setAccessTokenToLS(this.accessToken)
+          setProfileToLS(data.user)
+        } else if (url === path.logout) {
           this.accessToken = ''
-          clearAccessTokenFromLS()
+          clearAuthFromLS()
         }
 
         return res

@@ -11,11 +11,13 @@ import { ErrorResponse } from 'src/types/utils.type'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { toast } from 'react-toastify'
+import Button from 'src/components/Button'
+import path from 'src/constants/path'
 
 type FormState = Schema
 
 export default function Register() {
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setAuthContext } = useContext(AppContext)
   const navigate = useNavigate()
 
   const {
@@ -35,10 +37,12 @@ export default function Register() {
     const body = omit(data, ['confirm_password'])
 
     resisterAccountMutation.mutate(body, {
-      onSuccess: () => {
-        setIsAuthenticated(true)
+      onSuccess: (res) => {
+        // setIsAuthenticated(true)
+        // setProfile(res.data.data.user)
+        setAuthContext(res.data.data.user)
         toast.success('Sign Up Success')
-        navigate('/')
+        navigate(path.home)
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponse<EmailPasswordSchema>>(error)) {
@@ -94,16 +98,18 @@ export default function Register() {
               />
 
               <div className='mt-2'>
-                <button
+                <Button
                   type='submit'
-                  className='w-full bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
+                  className='flex w-full items-center justify-center bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
+                  disabled={resisterAccountMutation.isLoading}
+                  isLoading={resisterAccountMutation.isLoading}
                 >
                   Register
-                </button>
+                </Button>
               </div>
               <div className='mt-8 flex items-center justify-center text-center'>
                 <span className='text-gray-400'>Do you already have an account?</span>
-                <Link className='ml-1 text-red-400' to='/login'>
+                <Link className='ml-1 text-red-400' to={path.login}>
                   Login
                 </Link>
               </div>

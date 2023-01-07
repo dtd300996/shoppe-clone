@@ -7,7 +7,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import Profile from './pages/Profile'
 import { useContext } from 'react'
 import { AppContext } from './contexts/app.context'
-
+import path from './constants/path'
 export interface RouterElementType {
   path: string
   element: JSX.Element
@@ -28,7 +28,7 @@ function RejectedRoute() {
 
 const router: RouterElementType[] = [
   {
-    path: '',
+    path: path.home,
     index: true,
     element: (
       <MainLayout>
@@ -41,7 +41,7 @@ const router: RouterElementType[] = [
     element: <ProtectedRoute />,
     children: [
       {
-        path: 'profile',
+        path: path.profile,
         element: (
           <MainLayout>
             <Profile />
@@ -55,7 +55,7 @@ const router: RouterElementType[] = [
     element: <RejectedRoute />,
     children: [
       {
-        path: 'login',
+        path: path.login,
         element: (
           <ResisterLayout>
             <Login />
@@ -63,7 +63,7 @@ const router: RouterElementType[] = [
         )
       },
       {
-        path: 'register',
+        path: path.register,
         element: (
           <ResisterLayout>
             <Register />

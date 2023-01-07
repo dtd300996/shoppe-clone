@@ -5,16 +5,18 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { login } from 'src/api/auth.api'
+import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponse } from 'src/types/utils.type'
 import { EmailPasswordSchema, emailPasswordSchema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import path from 'src/constants/path'
 
 type FormState = EmailPasswordSchema
 
 export default function Login() {
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setAuthContext } = useContext(AppContext)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
@@ -33,10 +35,12 @@ export default function Login() {
 
   const onSubmit = handleSubmit((data) => {
     loginMutation.mutate(data, {
-      onSuccess: () => {
-        setIsAuthenticated(true)
+      onSuccess: (res) => {
+        // setIsAuthenticated(true)
+        // setProfile(res.data.data.user)
+        setAuthContext(res.data.data.user)
         toast.success('Logged in successfully')
-        const oldUrl = searchParams.get('url') || '/'
+        const oldUrl = searchParams.get('url') || path.home
 
         navigate(oldUrl)
       },
@@ -85,16 +89,18 @@ export default function Login() {
                 errorMessage={errors.password?.message}
               />
               <div className='mt-3'>
-                <button
+                <Button
                   type='submit'
-                  className='w-full bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
+                  className='flex w-full items-center justify-center bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
+                  isLoading={loginMutation.isLoading}
+                  disabled={loginMutation.isLoading}
                 >
                   Login
-                </button>
+                </Button>
               </div>
               <div className='mt-8 flex items-center justify-center text-center'>
                 <span className='text-gray-400'>Do not have an account?</span>
-                <Link className='ml-1 text-red-400' to='/register'>
+                <Link className='ml-1 text-red-400' to={path.register}>
                   Register
                 </Link>
               </div>
