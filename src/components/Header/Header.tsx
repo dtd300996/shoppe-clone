@@ -1,8 +1,36 @@
+import { useMutation } from '@tanstack/react-query'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { logout } from 'src/api/auth.api'
 import { CartSvg, ChevronDownSvg, GlobalSvg, LogoSvg, SearchSvg } from 'src/assets/icons'
+import { AppContext } from 'src/contexts/app.context'
+import { ErrorResponse } from 'src/types/utils.type'
+import { isAxiosError } from 'src/utils/utils'
 import Popover from '../Popover'
 
 export default function Header() {
+  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const logoutMutation = useMutation({
+    mutationFn: logout
+  })
+
+  const handleLogout = async () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: (res) => {
+        toast.success(res.data.message)
+        setIsAuthenticated(false)
+      },
+      onError: (error) => {
+        if (isAxiosError<ErrorResponse<unknown>>(error)) {
+          toast.error(error.response?.data.message)
+        } else {
+          toast.error('ERRRRRRR!!!')
+        }
+      }
+    })
+  }
+
   return (
     <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 text-white'>
       <div className='container'>
@@ -21,30 +49,45 @@ export default function Header() {
             <ChevronDownSvg className='h-5 w-5' />
           </Popover>
 
-          <Popover
-            className='ml-6 flex cursor-pointer items-center py-1  hover:text-gray-300'
-            renderPopover={
-              <div className='flex flex-col py-3 px-4'>
-                <Link to='/profile' className='py-2 px-3 text-left hover:text-orange'>
-                  My account
-                </Link>
-                <Link to='/' className='py-2 px-3 text-left hover:text-orange'>
-                  Orders
-                </Link>
-                <button className='py-2 px-3 text-left hover:text-orange'>Logout</button>
+          {isAuthenticated && (
+            <Popover
+              className='ml-6 flex cursor-pointer items-center py-1  hover:text-gray-300'
+              renderPopover={
+                <div className='flex flex-col py-3 px-4'>
+                  <Link to='/profile' className='py-2 px-3 text-left hover:text-orange'>
+                    My account
+                  </Link>
+                  <Link to='/' className='py-2 px-3 text-left hover:text-orange'>
+                    Orders
+                  </Link>
+                  <button className='py-2 px-3 text-left hover:text-orange' onClick={handleLogout}>
+                    Logout
+                  </button>
+                </div>
+              }
+              as={'span'}
+            >
+              <div className='mr-2 h-5 w-5 flex-shrink-0'>
+                <img
+                  src='https://i1-giaitri.vnecdn.net/2022/12/15/avatar-2-1-jpeg-2238-1671050566.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=Gjwi0rqvUSZXSzXx1YrqaA'
+                  alt='avatar'
+                  className='h-full w-full rounded-full object-cover'
+                />
               </div>
-            }
-            as={'span'}
-          >
-            <div className='mr-2 h-5 w-5 flex-shrink-0'>
-              <img
-                src='https://i1-giaitri.vnecdn.net/2022/12/15/avatar-2-1-jpeg-2238-1671050566.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=Gjwi0rqvUSZXSzXx1YrqaA'
-                alt='avatar'
-                className='h-full w-full rounded-full object-cover'
-              />
+              <div>DTD96</div>
+            </Popover>
+          )}
+          {!isAuthenticated && (
+            <div className='flex items-center'>
+              <Link to={'/register'} className='mx-3 capitalize hover:text-white/70'>
+                Register
+              </Link>
+              <div className='h-4 border-r-[1px] border-r-white/40' />
+              <Link to={'/login'} className='mx-3 capitalize hover:text-white/70'>
+                Login
+              </Link>
             </div>
-            <div>DTD96</div>
-          </Popover>
+          )}
         </div>
         <div className='mt-4 grid grid-cols-12 items-end gap-4'>
           <Link to='/' className='col-span-2'>

@@ -5,6 +5,8 @@ import ResisterLayout from './Layout/ResisterLayout'
 import MainLayout from './Layout/MainLayout'
 import { Navigate, Outlet } from 'react-router-dom'
 import Profile from './pages/Profile'
+import { useContext } from 'react'
+import { AppContext } from './contexts/app.context'
 
 export interface RouterElementType {
   path: string
@@ -12,14 +14,15 @@ export interface RouterElementType {
   children?: RouterElementType[]
   index?: boolean
 }
-const isAuthenticated = false
 
 function ProtectedRoute() {
-  const url = location.href
+  const { isAuthenticated } = useContext(AppContext)
+  const url = encodeURIComponent(location.href)
   return isAuthenticated ? <Outlet /> : <Navigate to={`/login?url=${url}`} />
 }
 
 function RejectedRoute() {
+  const { isAuthenticated } = useContext(AppContext)
   return isAuthenticated ? <Navigate to='/' /> : <Outlet />
 }
 

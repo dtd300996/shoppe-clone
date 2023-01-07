@@ -1,7 +1,10 @@
-import { Link } from 'react-router-dom'
+import { Link, useMatch } from 'react-router-dom'
 import { LogoSvg } from 'src/assets/icons'
 
 export default function RegisterHeader() {
+  const registerMatch = useMatch('register')
+  const isRegister = Boolean(registerMatch)
+
   return (
     <header className='sticky top-0 bg-white py-5'>
       <div className='mx-auto max-w-7xl px-4'>
@@ -11,7 +14,7 @@ export default function RegisterHeader() {
               <LogoSvg className='h-8 fill-orange lg:h-11' />
             </span>
           </Link>
-          <div className='ml-5 text-xl lg:text-2xl'>Register</div>
+          <div className='ml-5 text-xl lg:text-2xl'>{isRegister ? 'Register' : 'Login'}</div>
         </nav>
       </div>
     </header>
