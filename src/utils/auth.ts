@@ -16,6 +16,5 @@ export const getProfileFromLS = () => {
 }
 
 export const setProfileToLS = (profile: User) => {
-  console.log(profile)
   localStorage.setItem('profile', JSON.stringify(profile))
 }

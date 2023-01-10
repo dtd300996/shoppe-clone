@@ -11,3 +11,14 @@ export const isAxiosUnprocessableEntityError = <FormError>(error: unknown): erro
   // eslint-disable-next-line import/no-named-as-default-member
   return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
+
+export const formatCurrency = (currency: number) => new Intl.NumberFormat('de-DE').format(currency)
+
+export const formatNumberToSocialStyle = (value: number, seperator?: string) => {
+  const format = new Intl.NumberFormat('en', {
+    notation: 'compact',
+    maximumFractionDigits: 1
+  }).format(value)
+
+  return seperator ? format.replace('.', seperator) : format
+}
