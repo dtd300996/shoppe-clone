@@ -94,7 +94,7 @@ export default function Header() {
         </div>
         <div className='mt-4 grid grid-cols-12 items-end gap-4'>
           <Link to='/' className='col-span-2'>
-            <LogoSvg className='h-11 fill-white' />
+            <LogoSvg className='h-11 w-full fill-white' />
           </Link>
           <form className='col-span-9'>
             <div className='flex rounded-sm bg-white p-1'>
