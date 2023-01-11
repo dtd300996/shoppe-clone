@@ -8,7 +8,7 @@ import { CartSvg, ChevronDownSvg, GlobalSvg, LogoSvg, SearchSvg } from 'src/asse
 import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponse } from 'src/types/utils.type'
 import { isAxiosError } from 'src/utils/utils'
-import Popover from '../Popover'
+import Popover from '../Popover/Popover'
 
 export default function Header() {
   const { isAuthenticated, profile, setAuthContext } = useContext(AppContext)
