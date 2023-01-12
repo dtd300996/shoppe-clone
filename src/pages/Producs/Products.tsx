@@ -24,8 +24,8 @@ export default function Products() {
       exclude: queryParams.exclude,
       order: queryParams.order,
       rating_filter: queryParams.rating_filter,
-      price_max: queryParams.price_max,
       price_min: queryParams.price_min,
+      price_max: queryParams.price_max,
       name: queryParams.name,
       category: queryParams.category
     },

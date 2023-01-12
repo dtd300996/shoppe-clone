@@ -1,12 +1,15 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
-import { omit } from 'lodash'
+import { isUndefined, omit, omitBy } from 'lodash'
 import React from 'react'
-import { createSearchParams, Link } from 'react-router-dom'
+import { useForm, Controller } from 'react-hook-form'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import { ArrowLeftActiveSvg, FilterSvg, Menu3DotSvg, StarSolidSvg, StarSvg } from 'src/assets/icons'
 import Button from 'src/components/Button'
-import Input from 'src/components/Input'
+import InputNumber from 'src/components/InputNumber'
 import path from 'src/constants/path'
 import { Category } from 'src/types/category.type'
+import { PriceSchema, priceSchema } from 'src/utils/rules'
 import { QueryConfig } from '../Products'
 
 type Props = {
@@ -17,6 +20,34 @@ type Props = {
 
 export default React.memo(function AsideFilter({ queryConfig, pathname, categories }: Props) {
   const { category: categoryQueryParam } = queryConfig
+  const navigate = useNavigate()
+
+  const createSearchParamsWithQueryConfig = (queryConfig: QueryConfig = {}) => {
+    return createSearchParams({ ...queryConfig }).toString()
+  }
+
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    formState: { errors }
+  } = useForm<PriceSchema>({
+    defaultValues: {
+      price_min: '',
+      price_max: ''
+    },
+    resolver: yupResolver(priceSchema)
+    // shouldFocusError: false
+  })
+
+  const onSubmit = handleSubmit((data) => {
+    navigate({
+      pathname,
+      search: createSearchParamsWithQueryConfig(omitBy({ ...queryConfig, ...data }, isUndefined))
+    })
+  })
+
+  console.log(errors)
 
   return (
     <div className='py-4'>
@@ -25,7 +56,7 @@ export default React.memo(function AsideFilter({ queryConfig, pathname, categori
           <Link
             to={{
               pathname,
-              search: createSearchParams(omit({ ...queryConfig }, ['category'])).toString()
+              search: createSearchParamsWithQueryConfig(omit({ ...queryConfig }, ['category']))
             }}
             className='flex items-center font-bold'
           >
@@ -40,7 +71,7 @@ export default React.memo(function AsideFilter({ queryConfig, pathname, categori
                   <Link
                     to={{
                       pathname,
-                      search: createSearchParams({ ...queryConfig, category: category._id }).toString()
+                      search: createSearchParamsWithQueryConfig({ ...queryConfig, category: category._id })
                     }}
                     className={classNames('relative px-2', {
                       'font-semibold text-orange': isActive
@@ -66,25 +97,49 @@ export default React.memo(function AsideFilter({ queryConfig, pathname, categori
       <div className='my-4 h-[1px] bg-gray-300'></div>
       <div className='my-5'>
         <div>Range price</div>
-        <form className='mt-2'>
-          <div className='items-star mb-3 flex'>
-            <Input
-              type='text'
-              className='grow'
-              name='from'
-              classNameInput='w-full rounded-sm border border-gray-300 p-1 outline-none focus:border-gray-500 focus:shadow-sm'
-              classNameError='d-none'
-              placeholder='$ From'
+        <form className='mt-2' onSubmit={onSubmit}>
+          <div className='items-star flex'>
+            <Controller
+              control={control}
+              name='price_min'
+              render={({ field }) => (
+                <InputNumber
+                  type='text'
+                  className='grow'
+                  classNameInput='w-full rounded-sm border border-gray-300 p-1 outline-none focus:border-gray-500 focus:shadow-sm'
+                  classNameError='d-none'
+                  placeholder='$ From'
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e)
+                    trigger('price_max')
+                  }}
+                />
+              )}
             />
+
             <div className='mx-2 mt-2 shrink-0'>-</div>
-            <Input
-              type='text'
-              className='grow'
-              name='to'
-              classNameInput='w-full rounded-sm border border-gray-300 p-1 outline-none focus:border-gray-500 focus:shadow-sm'
-              classNameError='d-none'
-              placeholder='$ To'
+            <Controller
+              control={control}
+              name='price_max'
+              render={({ field }) => (
+                <InputNumber
+                  type='text'
+                  className='grow'
+                  classNameInput='w-full rounded-sm border border-gray-300 p-1 outline-none focus:border-gray-500 focus:shadow-sm'
+                  classNameError='d-none'
+                  placeholder='$ To'
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e)
+                    trigger('price_min')
+                  }}
+                />
+              )}
             />
+          </div>
+          <div className='mt-1 min-h-[1.25rem] text-sm text-red-600'>
+            {errors.price_min?.message || errors.price_max?.message}
           </div>
           <Button className='w-full items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange/80'>
             Apply
