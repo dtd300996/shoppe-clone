@@ -1,3 +1,4 @@
+import { SORT_BY } from './../constants/product'
 export interface Product {
   _id: string
   images: string[]
@@ -29,13 +30,13 @@ export interface Products {
 }
 
 export interface ProductsConfig {
-  page?: number
-  limit?: number
-  sort_by?: 'createAt' | 'view' | 'sold' | 'price'
+  page?: number | string
+  limit?: number | string
+  sort_by?: 'createdAt' | 'view' | 'sold' | 'price'
   order?: 'asc' | 'desc'
   exclude?: string
-  rating_filter?: number
-  price_max?: number
-  price_min?: number
+  rating_filter?: number | string
+  price_max?: number | string
+  price_min?: number | string
   name?: string
 }
