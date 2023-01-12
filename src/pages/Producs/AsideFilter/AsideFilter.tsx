@@ -1,28 +1,65 @@
-import { Link } from 'react-router-dom'
+import classNames from 'classnames'
+import { omit } from 'lodash'
+import React from 'react'
+import { createSearchParams, Link } from 'react-router-dom'
 import { ArrowLeftActiveSvg, FilterSvg, Menu3DotSvg, StarSolidSvg, StarSvg } from 'src/assets/icons'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import path from 'src/constants/path'
+import { Category } from 'src/types/category.type'
+import { QueryConfig } from '../Products'
 
-export default function AsideFilter() {
+type Props = {
+  queryConfig: QueryConfig
+  pathname: string
+  categories: Category[]
+}
+
+export default React.memo(function AsideFilter({ queryConfig, pathname, categories }: Props) {
+  const { category: categoryQueryParam } = queryConfig
+
   return (
     <div className='py-4'>
-      <Link to={path.home} className='flex items-center font-bold'>
-        <Menu3DotSvg className='mr-3 h-4 w-3 fill-current' /> All categories
-      </Link>
-      <div className='my-4 h-[1px] bg-gray-300'></div>
-      <ul>
-        <li className='py-2 pl-2'>
-          <Link to={path.home} className='relative px-2 font-semibold text-orange'>
-            <ArrowLeftActiveSvg className='absolute top-1 left-[-10px] h-2 w-2 fill-orange' /> Men style
+      {!!categories.length && (
+        <>
+          <Link
+            to={{
+              pathname,
+              search: createSearchParams(omit({ ...queryConfig }, ['category'])).toString()
+            }}
+            className='flex items-center font-bold'
+          >
+            <Menu3DotSvg className='mr-3 h-4 w-3 fill-current' /> All categories
           </Link>
-        </li>
-        <li className='py-2 pl-2'>
-          <Link to={path.home} className='relative px-2'>
-            Women style
-          </Link>
-        </li>
-      </ul>
+          <div className='my-4 h-[1px] bg-gray-300'></div>
+          <ul>
+            {categories.map((category) => {
+              const isActive = categoryQueryParam === category._id
+              return (
+                <li className='py-2 pl-2' key={category._id}>
+                  <Link
+                    to={{
+                      pathname,
+                      search: createSearchParams({ ...queryConfig, category: category._id }).toString()
+                    }}
+                    className={classNames('relative px-2', {
+                      'font-semibold text-orange': isActive
+                    })}
+                  >
+                    {isActive && (
+                      <ArrowLeftActiveSvg
+                        className={classNames('absolute top-1 left-[-10px] h-2 w-2 fill-current text-inherit')}
+                      />
+                    )}
+                    {category.name}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </>
+      )}
+
       <Link to={path.home} className='mt-4 flex items-center font-bold uppercase'>
         <FilterSvg className='mr-3 h-4 w-3 fill-current' /> Search filter
       </Link>
@@ -85,4 +122,4 @@ export default function AsideFilter() {
       </Button>
     </div>
   )
-}
+})

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { isUndefined, omitBy } from 'lodash'
+import categoryApi from 'src/api/category.api'
 import productApi from 'src/api/product.api'
 import Pagination from 'src/components/Pagination'
 import path from 'src/constants/path'
@@ -25,40 +26,46 @@ export default function Products() {
       rating_filter: queryParams.rating_filter,
       price_max: queryParams.price_max,
       price_min: queryParams.price_min,
-      name: queryParams.name
+      name: queryParams.name,
+      category: queryParams.category
     },
     isUndefined
   )
 
-  const { data } = useQuery({
+  const { data: products } = useQuery({
     queryKey: ['products', queryParams],
     queryFn: () => productApi.getProducts(queryConfig as ProductsConfig),
     keepPreviousData: true
   })
 
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => categoryApi.getCategories()
+  })
+
   return (
     <div className='bg-gray-200 py-6'>
       <div className='container'>
-        {data && (
+        {products && (
           <div className='grid grid-cols-12 gap-6'>
             <div className='col-span-3'>
-              <AsideFilter />
+              <AsideFilter queryConfig={queryConfig} pathname={path.home} categories={categories?.data.data || []} />
             </div>
             <div className='col-span-9 '>
               <SortProducts
                 queryConfig={queryConfig}
-                pageSize={data?.data.data.pagination.page_size}
+                pageSize={products?.data.data.pagination.page_size}
                 pathname={path.home}
               />
               <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-                {data.data.data.products.map((product) => (
+                {products.data.data.products.map((product) => (
                   <div className='col-span-1' key={product._id}>
                     <Product product={product} />
                   </div>
                 ))}
               </div>
               <Pagination<QueryConfig>
-                pageSize={data.data.data.pagination.page_size}
+                pageSize={products.data.data.pagination.page_size}
                 queryConfig={queryConfig}
                 pathname={path.home}
               />
