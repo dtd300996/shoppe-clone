@@ -2,15 +2,16 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
 import { isUndefined, omit, omitBy } from 'lodash'
 import React from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeftActiveSvg, FilterSvg, Menu3DotSvg, StarSolidSvg, StarSvg } from 'src/assets/icons'
+import { ArrowLeftActiveSvg, FilterSvg, Menu3DotSvg } from 'src/assets/icons'
 import Button from 'src/components/Button'
 import InputNumber from 'src/components/InputNumber'
 import path from 'src/constants/path'
 import { Category } from 'src/types/category.type'
 import { PriceSchema, priceSchema } from 'src/utils/rules'
 import { QueryConfig } from '../Products'
+import RatingStar from '../RatingStar'
 
 type Props = {
   queryConfig: QueryConfig
@@ -30,11 +31,12 @@ export default React.memo(function AsideFilter({ queryConfig, pathname, categori
     control,
     handleSubmit,
     trigger,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm<PriceSchema>({
     defaultValues: {
       price_min: '',
-      price_max: ''
+      price_max: queryConfig.price_max || ''
     },
     resolver: yupResolver(priceSchema)
     // shouldFocusError: false
@@ -47,7 +49,19 @@ export default React.memo(function AsideFilter({ queryConfig, pathname, categori
     })
   })
 
-  console.log(errors)
+  const handleRemoveAll = () => {
+    reset({
+      price_min: '',
+      price_max: ''
+    })
+
+    navigate({
+      pathname,
+      search: createSearchParamsWithQueryConfig(
+        omit({ ...queryConfig }, ['category', 'price_min', 'price_max', 'rating_filter'])
+      )
+    })
+  }
 
   return (
     <div className='py-4'>
@@ -148,31 +162,12 @@ export default React.memo(function AsideFilter({ queryConfig, pathname, categori
       </div>
       <div className='my-4 h-[1px] bg-gray-300'></div>
       <div className='text-sm'>Review</div>
-      <ul className='my-3'>
-        <li className='py-1 pl-2'>
-          <Link to='' className='flex items-center text-sm'>
-            {Array(5)
-              .fill('1')
-              .map((_, index) => (
-                <StarSolidSvg className='mr-1 h-4 w-4' key={index} />
-              ))}{' '}
-            <span>or more</span>
-          </Link>
-        </li>
-        <li className='py-1 pl-2'>
-          <Link to='' className='flex items-center text-sm'>
-            {Array(4)
-              .fill('1')
-              .map((_, index) => (
-                <StarSolidSvg className='mr-1 h-4 w-4' key={index} />
-              ))}{' '}
-            <StarSvg className='mr-1 h-4 w-4' />
-            <span>or more</span>
-          </Link>
-        </li>
-      </ul>
+      <RatingStar pathname={pathname} queryConfig={queryConfig} />
       <div className='my-4 h-[1px] bg-gray-300'></div>
-      <Button className='w-full items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange/80'>
+      <Button
+        onClick={handleRemoveAll}
+        className='w-full items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange/80'
+      >
         Delete all
       </Button>
     </div>

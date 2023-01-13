@@ -20,7 +20,7 @@ export default function SortProducts({ queryConfig, pageSize, pathname }: Props)
     return sort_by === sortByValue
   }
 
-  const handleSort = (sortByValue: Exclude<ProductsConfig['sort_by'], undefined>) => (_) => {
+  const handleSort = (sortByValue: Exclude<ProductsConfig['sort_by'], undefined>) => () => {
     navigate({
       pathname,
       search: createSearchParams(omit({ ...queryConfig, sort_by: sortByValue }, ['order'])).toString()
@@ -68,7 +68,7 @@ export default function SortProducts({ queryConfig, pageSize, pathname }: Props)
             Best selling
           </button>
           <select
-            className={classNames('h-8 bg-white px-4 text-center text-sm capitalize ', {
+            className={classNames('h-8 bg-white px-4 text-center text-sm capitalize outline-none', {
               'bg-orange text-white hover:bg-orange/80': isActiveSortBy(SORT_BY.price),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(SORT_BY.price)
             })}

@@ -1,11 +1,10 @@
 import { forwardRef, InputHTMLAttributes } from 'react'
-import { RegisterOptions, UseFormRegister } from 'react-hook-form'
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string
   classNameInput?: string
   classNameError?: string
-  onChange: React.ChangeEventHandler<HTMLInputElement> | undefined
+  onChange: React.ChangeEventHandler<HTMLInputElement>
 }
 
 export default forwardRef<HTMLInputElement, Props>(function InputNumber(
@@ -19,7 +18,7 @@ export default forwardRef<HTMLInputElement, Props>(function InputNumber(
   },
   ref
 ) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | undefined) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e) {
       const { value } = e.target
       if (/^\d+$/.test(value) || (value === '' && onChange)) {

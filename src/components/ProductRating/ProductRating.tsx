@@ -1,4 +1,4 @@
-import { StarSolidSvg } from 'src/assets/icons'
+import { StarSvg } from 'src/assets/icons'
 
 interface Props {
   rating: number
@@ -31,10 +31,10 @@ export default function ProductRating({ rating = 2.2 }: Props) {
                   width: caculateWidth(index + 1)
                 }}
               >
-                <StarSolidSvg className='h-3 w-3 fill-yellow-300 text-yellow-300 ' />
+                <StarSvg className='h-3 w-3 fill-yellow-300 text-yellow-300 ' />
               </div>
             }
-            <StarSolidSvg className='h-3 w-3 fill-current text-gray-300 ' />
+            <StarSvg className='h-3 w-3 fill-current text-gray-300 ' />
           </div>
         ))}
     </div>
