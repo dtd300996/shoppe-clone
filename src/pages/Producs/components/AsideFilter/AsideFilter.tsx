@@ -10,7 +10,7 @@ import InputNumber from 'src/components/InputNumber'
 import path from 'src/constants/path'
 import { Category } from 'src/types/category.type'
 import { PriceSchema, priceSchema } from 'src/utils/rules'
-import { QueryConfig } from '../Products'
+import { QueryConfig } from '../../Products'
 import RatingStar from '../RatingStar'
 
 type Props = {

@@ -2,8 +2,14 @@ import { StarSvg } from 'src/assets/icons'
 
 interface Props {
   rating: number
+  activeClassname?: string
+  nonActiveClassName?: string
 }
-export default function ProductRating({ rating = 2.2 }: Props) {
+export default function ProductRating({
+  rating = 2.2,
+  activeClassname = 'fill-yellow-300 text-yellow-300',
+  nonActiveClassName = 'fill-current text-gray-300'
+}: Props) {
   const caculateWidth = (order: number): string => {
     // if (order - rating < 0)
     if (rating - order > 0) {
@@ -31,10 +37,10 @@ export default function ProductRating({ rating = 2.2 }: Props) {
                   width: caculateWidth(index + 1)
                 }}
               >
-                <StarSvg className='h-3 w-3 fill-yellow-300 text-yellow-300 ' />
+                <StarSvg className={`h-3 w-3 ${activeClassname}`} />
               </div>
             }
-            <StarSvg className='h-3 w-3 fill-current text-gray-300 ' />
+            <StarSvg className={`h-3 w-3 ${nonActiveClassName}`} />
           </div>
         ))}
     </div>
