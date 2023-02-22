@@ -12,7 +12,7 @@ export default function ProductRating({
 }: Props) {
   const caculateWidth = (order: number): string => {
     // if (order - rating < 0)
-    if (rating - order > 0) {
+    if (rating - order >= 0) {
       return '100%'
     }
 
