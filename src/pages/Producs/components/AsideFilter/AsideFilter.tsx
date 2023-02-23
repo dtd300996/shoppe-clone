@@ -8,9 +8,9 @@ import { ArrowLeftActiveSvg, FilterSvg, Menu3DotSvg } from 'src/assets/icons'
 import Button from 'src/components/Button'
 import InputNumber from 'src/components/InputNumber'
 import path from 'src/constants/path'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 import { Category } from 'src/types/category.type'
 import { PriceSchema, priceSchema } from 'src/utils/rules'
-import { QueryConfig } from '../../Products'
 import RatingStar from '../RatingStar'
 
 type Props = {

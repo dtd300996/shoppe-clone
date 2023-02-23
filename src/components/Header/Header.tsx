@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import path from 'src/constants/path'
 import { useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { logout } from 'src/api/auth.api'
 import { CartSvg, ChevronDownSvg, GlobalSvg, LogoSvg, SearchSvg } from 'src/assets/icons'
@@ -9,8 +9,23 @@ import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponse } from 'src/types/utils.type'
 import { isAxiosError } from 'src/utils/utils'
 import Popover from '../Popover/Popover'
+import useQueryConfig from 'src/hooks/useQueryConfig'
+import { useForm } from 'react-hook-form'
+import { schema, Schema } from 'src/utils/rules'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { omit } from 'lodash'
+
+type FormData = Pick<Schema, 'name'>
+const nameSchema = schema.pick(['name'])
 
 export default function Header() {
+  const navigate = useNavigate()
+  const queryConfig = useQueryConfig()
+  const { handleSubmit, register } = useForm<FormData>({
+    defaultValues: { name: '' },
+    resolver: yupResolver(nameSchema)
+  })
+
   const { isAuthenticated, profile, setAuthContext } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: logout
@@ -33,6 +48,13 @@ export default function Header() {
       }
     })
   }
+
+  const onSubmitSearch = handleSubmit((data) => {
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(omit({ ...queryConfig, name: data.name }, ['sort_by', 'order'])).toString()
+    })
+  })
 
   return (
     <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 text-white'>
@@ -96,12 +118,13 @@ export default function Header() {
           <Link to='/' className='col-span-2'>
             <LogoSvg className='h-11 w-full fill-white' />
           </Link>
-          <form className='col-span-9'>
+          <form className='col-span-9' onSubmit={onSubmitSearch}>
             <div className='flex rounded-sm bg-white p-1'>
               <input
                 type='text'
                 placeholder='Free shipping for orders from 0$'
                 className='flex-grow border-none bg-transparent px-3 py-2 text-black outline-none'
+                {...register('name')}
               />
               <button className='flex-shrink-0 rounded-sm bg-orange py-2 px-6 hover:opacity-90'>
                 <SearchSvg className='h-6 w-6' />

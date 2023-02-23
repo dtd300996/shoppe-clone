@@ -3,8 +3,8 @@ import { omit } from 'lodash'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import { ChevronLeftSvg, ChevronRightSvg } from 'src/assets/icons'
 import { SORT_BY, ORDER } from 'src/constants/product'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 import { ProductsConfig } from 'src/types/product.type'
-import { QueryConfig } from '../../Products'
 type Props = {
   pageSize: number
   queryConfig: QueryConfig

@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import { StarSvg } from 'src/assets/icons'
-import { QueryConfig } from '../../Products'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 type Props = {
   queryConfig: QueryConfig
