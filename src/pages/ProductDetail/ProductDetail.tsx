@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import productApi from 'src/api/product.api'
 import { CartSvg, ChevronLeftSvg, ChevronRightSvg } from 'src/assets/icons'
 import InputNumber from 'src/components/InputNumber'
@@ -9,8 +9,18 @@ import ProductRating from 'src/components/ProductRating'
 import { Product as ProductType, ProductsConfig } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/utils'
 import Product from '../Producs/components/Product'
+import QuantityController from 'src/components/QuantityController'
+import purchaseApi from 'src/api/purchase.api'
+import { purchasesStatus } from 'src/constants/purchase'
+import { AppContext } from 'src/contexts/app.context'
+import { toast } from 'react-toastify'
 
 export default function ProductDetail() {
+  const queryClient = useQueryClient()
+  const { isAuthenticated } = useContext(AppContext)
+  const navigate = useNavigate()
+
+  const [buyCount, setBuyCount] = useState(1)
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
 
@@ -39,6 +49,8 @@ export default function ProductDetail() {
     enabled: Boolean(product),
     staleTime: 3 * 60 * 1000
   })
+
+  const addToCartMutation = useMutation(purchaseApi.addToCart)
 
   const products = productsData?.data.data.products
 
@@ -100,6 +112,31 @@ export default function ProductDetail() {
 
   const handleRemoveZoom = () => {
     imageRef.current?.removeAttribute('style')
+  }
+
+  const handleBuyCount = (value: number) => {
+    setBuyCount(value)
+  }
+
+  const addToCart = () => {
+    if (!isAuthenticated) {
+      navigate(`/login`)
+      return
+    }
+    addToCartMutation.mutate(
+      {
+        buy_count: buyCount,
+        product_id: product?._id as string
+      },
+      {
+        onSuccess: (data) => {
+          queryClient.invalidateQueries({
+            queryKey: ['purchase', { status: purchasesStatus.inCart }]
+          })
+          toast.success(data.data.message, { autoClose: 1000 })
+        }
+      }
+    )
   }
 
   if (!product) return null
@@ -177,25 +214,20 @@ export default function ProductDetail() {
               </div>
               <div className='mt-8 flex items-center'>
                 <div className='capitalize text-gray-500'>Quantity</div>
-                <div className='ml-10 flex items-center'>
-                  <button className='flex h-8 w-8 items-center justify-center rounded-l-sm border border-gray-300 text-gray-600'>
-                    -
-                  </button>
-                  <InputNumber
-                    value={1}
-                    className=''
-                    classNameError='hidden'
-                    classNameInput='h-8 w-14 border-t border-b border-gray-300 p-1 text-center outline-none'
-                  />
-                  <button className='flex h-8 w-8 items-center justify-center rounded-r-sm border border-gray-300 text-gray-600'>
-                    +
-                  </button>
-
-                  <div className='ml-6 text-sm text-gray-500'>{product.quantity} products available</div>
-                </div>
+                <QuantityController
+                  max={product.quantity}
+                  onDecrease={handleBuyCount}
+                  onIncrease={handleBuyCount}
+                  onType={handleBuyCount}
+                  value={buyCount}
+                />
+                <div className='ml-6 text-sm text-gray-500'>{product.quantity} products available</div>
               </div>
               <div className='mt-8 flex items-center'>
-                <button className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-5 capitalize text-orange hover:bg-orange/5'>
+                <button
+                  onClick={addToCart}
+                  className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-5 capitalize text-orange hover:bg-orange/5'
+                >
                   <CartSvg className='mr-[10px] h-5 w-5 fill-current stroke-orange text-orange' /> Add to cart
                 </button>
                 <button className='ml-4 flex h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange px-5 capitalize text-white shadow-sm outline-none hover:bg-orange/90'>

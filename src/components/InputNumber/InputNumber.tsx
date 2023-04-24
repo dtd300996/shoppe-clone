@@ -1,13 +1,13 @@
 import { forwardRef, InputHTMLAttributes } from 'react'
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
+export interface InputNumberProps extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string
   classNameInput?: string
   classNameError?: string
-  onChange: React.ChangeEventHandler<HTMLInputElement>
+  onChange?: React.ChangeEventHandler<HTMLInputElement>
 }
 
-export default forwardRef<HTMLInputElement, Props>(function InputNumber(
+export default forwardRef<HTMLInputElement, InputNumberProps>(function InputNumber(
   {
     errorMessage,
     className,
@@ -22,7 +22,7 @@ export default forwardRef<HTMLInputElement, Props>(function InputNumber(
     if (e) {
       const { value } = e.target
       if (/^\d+$/.test(value) || (value === '' && onChange)) {
-        onChange(e)
+        onChange && onChange(e)
       }
     }
   }

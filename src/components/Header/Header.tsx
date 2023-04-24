@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import path from 'src/constants/path'
 import { useContext } from 'react'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
@@ -7,17 +7,20 @@ import { logout } from 'src/api/auth.api'
 import { CartSvg, ChevronDownSvg, GlobalSvg, LogoSvg, SearchSvg } from 'src/assets/icons'
 import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponse } from 'src/types/utils.type'
-import { isAxiosError } from 'src/utils/utils'
+import { formatCurrency, isAxiosError } from 'src/utils/utils'
 import Popover from '../Popover/Popover'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { useForm } from 'react-hook-form'
 import { schema, Schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
+import { purchasesStatus } from 'src/constants/purchase'
+import purchaseApi from 'src/api/purchase.api'
 
 type FormData = Pick<Schema, 'name'>
 const nameSchema = schema.pick(['name'])
 
+const MAX_PURCHASE = 5
 export default function Header() {
   const navigate = useNavigate()
   const queryConfig = useQueryConfig()
@@ -30,6 +33,14 @@ export default function Header() {
   const logoutMutation = useMutation({
     mutationFn: logout
   })
+
+  const { data: purchasesIncartData } = useQuery({
+    queryKey: ['purchase', { status: purchasesStatus.inCart }],
+    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
+    enabled: isAuthenticated
+  })
+
+  const purchasesIncart = purchasesIncartData?.data.data
 
   const handleLogout = async () => {
     logoutMutation.mutate(undefined, {
@@ -137,110 +148,49 @@ export default function Header() {
               className=''
               renderPopover={
                 <div className='relative max-w-[400px] rounded-sm bg-white text-sm shadow-md'>
-                  <div className='p-2'>
-                    <div className='capitalize text-gray-400'>New products</div>
-                    <div className='mt-5'>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shrink-0'>
-                          <img
-                            src='https://via.placeholder.com/150'
-                            alt='product-1'
-                            className='h-11 w-11 object-cover'
-                          />
-                        </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus, mollitia?
+                  {!purchasesIncart?.length && <div className='p-2'>No products in the cart </div>}
+                  {purchasesIncart?.length && (
+                    <div className='p-2'>
+                      <div className='capitalize text-gray-400'>New products</div>
+                      <div className='mt-5'>
+                        {purchasesIncart.slice(0, MAX_PURCHASE).map((purchase) => (
+                          <div className='mt-2 flex py-2 hover:bg-gray-100' key={purchase._id}>
+                            <div className='flex-shrink-0'>
+                              <img src={purchase.product.image} alt='product-1' className='h-11 w-11 object-cover' />
+                            </div>
+                            <div className='ml-2 flex-grow overflow-hidden'>
+                              <div className='truncate'>{purchase.product.name} </div>
+                            </div>
+                            <div className='ml-2 flex-shrink-0'>
+                              <div className='text-orange'>
+                                {formatCurrency(purchase.product.price_before_discount)}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div className='ml-2 flex-shrink-0'>
-                          <div className='text-orange'>333.222$</div>
-                        </div>
+                        ))}
                       </div>
 
-                      <div className='mt-4 flex'>
-                        <div className='flex-shrink-0'>
-                          <img
-                            src='https://via.placeholder.com/150'
-                            alt='product-1'
-                            className='h-11 w-11 object-cover'
-                          />
+                      <div className='mt-6 flex items-center justify-between'>
+                        <div className='text-xs capitalize text-gray-500'>
+                          {purchasesIncart.length > MAX_PURCHASE
+                            ? `${purchasesIncart.length - MAX_PURCHASE} add to cart`
+                            : ''}
                         </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus, mollitia?
-                          </div>
-                        </div>
-                        <div className='ml-2 flex-shrink-0'>
-                          <div className='text-orange'>333.222$</div>
-                        </div>
-                      </div>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shrink-0'>
-                          <img
-                            src='https://via.placeholder.com/150'
-                            alt='product-1'
-                            className='h-11 w-11 object-cover'
-                          />
-                        </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus, mollitia?
-                          </div>
-                        </div>
-                        <div className='ml-2 flex-shrink-0'>
-                          <div className='text-orange'>333.222$</div>
-                        </div>
-                      </div>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shrink-0'>
-                          <img
-                            src='https://via.placeholder.com/150'
-                            alt='product-1'
-                            className='h-11 w-11 object-cover'
-                          />
-                        </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus, mollitia?
-                          </div>
-                        </div>
-                        <div className='ml-2 flex-shrink-0'>
-                          <div className='text-orange'>333.222$</div>
-                        </div>
-                      </div>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shrink-0'>
-                          <img
-                            src='https://via.placeholder.com/150'
-                            alt='product-1'
-                            className='h-11 w-11 object-cover'
-                          />
-                        </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus, mollitia?
-                          </div>
-                        </div>
-                        <div className='ml-2 flex-shrink-0'>
-                          <div className='text-orange'>333.222$</div>
-                        </div>
+                        <button className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:bg-opacity-80'>
+                          View cart
+                        </button>
                       </div>
                     </div>
-
-                    <div className='mt-6 flex items-center justify-between'>
-                      <div className='text-xs capitalize text-gray-500'>Add to cart</div>
-                      <button className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:bg-opacity-80'>
-                        View cart
-                      </button>
-                    </div>
-                  </div>
+                  )}
                 </div>
               }
               as={'span'}
             >
-              <Link to={path.cart} className=''>
+              <Link to={path.cart} className='relative'>
                 <CartSvg className='h-8 w-8' />
+                <span className='absolute top-[-6px] right-[-15px] rounded-full bg-white px-[9px] py-[1px] text-orange'>
+                  {purchasesIncart?.length}
+                </span>
               </Link>
             </Popover>
           </div>
