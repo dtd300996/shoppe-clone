@@ -3,18 +3,12 @@ import Products from './pages/Producs'
 import Register from './pages/Resister'
 import ResisterLayout from './Layout/ResisterLayout'
 import MainLayout from './Layout/MainLayout'
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, RouteObject } from 'react-router-dom'
 import Profile from './pages/Profile'
 import { useContext } from 'react'
 import { AppContext } from './contexts/app.context'
 import path from './constants/path'
 import ProductDetail from './pages/ProductDetail'
-export interface RouterElementType {
-  path: string
-  element: JSX.Element
-  children?: RouterElementType[]
-  index?: boolean
-}
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -27,7 +21,7 @@ function RejectedRoute() {
   return isAuthenticated ? <Navigate to='/' /> : <Outlet />
 }
 
-const router: RouterElementType[] = [
+const router: RouteObject[] = [
   {
     path: path.home,
     index: true,

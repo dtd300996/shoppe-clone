@@ -1,7 +1,6 @@
-import { useRoutes } from 'react-router'
-import { RouterElementType } from 'src/router'
+import { useRoutes, RouteObject } from 'react-router'
 
-export default function useRouteElements(router: RouterElementType[]) {
+export default function useRouteElements(router: RouteObject[]) {
   const routeElements = useRoutes(router)
 
   return routeElements
