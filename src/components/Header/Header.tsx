@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import path from 'src/constants/path'
 import { useContext } from 'react'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
@@ -22,6 +22,7 @@ const nameSchema = schema.pick(['name'])
 
 const MAX_PURCHASE = 5
 export default function Header() {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const queryConfig = useQueryConfig()
   const { handleSubmit, register } = useForm<FormData>({
@@ -49,6 +50,7 @@ export default function Header() {
         // setIsAuthenticated(false)
         // setProfile(null)
         setAuthContext(null)
+        queryClient.removeQueries(['purchase', { status: purchasesStatus.inCart }])
       },
       onError: (error) => {
         if (isAxiosError<ErrorResponse<unknown>>(error)) {
@@ -176,9 +178,12 @@ export default function Header() {
                             ? `${purchasesIncart.length - MAX_PURCHASE} add to cart`
                             : ''}
                         </div>
-                        <button className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:bg-opacity-80'>
+                        <Link
+                          to={path.cart}
+                          className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:bg-opacity-80'
+                        >
                           View cart
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   )}
@@ -188,9 +193,11 @@ export default function Header() {
             >
               <Link to={path.cart} className='relative'>
                 <CartSvg className='h-8 w-8' />
-                <span className='absolute top-[-6px] right-[-15px] rounded-full bg-white px-[9px] py-[1px] text-orange'>
-                  {purchasesIncart?.length}
-                </span>
+                {isAuthenticated && (
+                  <span className='absolute top-[-6px] right-[-15px] rounded-full bg-white px-[9px] py-[1px] text-orange'>
+                    {purchasesIncart?.length}
+                  </span>
+                )}
               </Link>
             </Popover>
           </div>
