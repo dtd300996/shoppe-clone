@@ -12,6 +12,7 @@ import { QueryConfig } from 'src/hooks/useQueryConfig'
 import { Category } from 'src/types/category.type'
 import { PriceSchema, priceSchema } from 'src/utils/rules'
 import RatingStar from '../RatingStar'
+import InputV2 from 'src/components/InputV2'
 
 type Props = {
   queryConfig: QueryConfig
@@ -113,7 +114,7 @@ export default React.memo(function AsideFilter({ queryConfig, pathname, categori
         <div>Range price</div>
         <form className='mt-2' onSubmit={onSubmit}>
           <div className='items-star flex'>
-            <Controller
+            {/* <Controller
               control={control}
               name='price_min'
               render={({ field }) => (
@@ -130,6 +131,19 @@ export default React.memo(function AsideFilter({ queryConfig, pathname, categori
                   }}
                 />
               )}
+            /> */}
+
+            <InputV2
+              control={control}
+              name='price_min'
+              classNameInput='w-full rounded-sm border border-gray-300 p-1 outline-none focus:border-gray-500 focus:shadow-sm'
+              classNameError='d-none'
+              placeholder='$ From'
+              className='grow'
+              type='number'
+              onChange={() => {
+                trigger('price_max')
+              }}
             />
 
             <div className='mx-2 mt-2 shrink-0'>-</div>
