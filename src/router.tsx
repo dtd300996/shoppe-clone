@@ -13,7 +13,7 @@ import Cart from './pages/Cart'
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
-  const url = encodeURIComponent(location.href)
+  const url = encodeURIComponent(location.pathname)
   return isAuthenticated ? <Outlet /> : <Navigate to={`/login?url=${url}`} />
 }
 
