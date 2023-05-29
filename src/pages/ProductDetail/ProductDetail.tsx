@@ -14,6 +14,7 @@ import purchaseApi from 'src/api/purchase.api'
 import { purchasesStatus } from 'src/constants/purchase'
 import { AppContext } from 'src/contexts/app.context'
 import { toast } from 'react-toastify'
+import path from 'src/constants/path'
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
@@ -116,6 +117,16 @@ export default function ProductDetail() {
 
   const handleBuyCount = (value: number) => {
     setBuyCount(value)
+  }
+
+  const buyNow = async () => {
+    const res = await addToCartMutation.mutateAsync({ buy_count: buyCount, product_id: product?._id as string })
+    const purchase = res.data.data
+    navigate(path.cart, {
+      state: {
+        purchaseId: purchase._id
+      }
+    })
   }
 
   const addToCart = () => {
@@ -230,7 +241,10 @@ export default function ProductDetail() {
                 >
                   <CartSvg className='mr-[10px] h-5 w-5 fill-current stroke-orange text-orange' /> Add to cart
                 </button>
-                <button className='ml-4 flex h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange px-5 capitalize text-white shadow-sm outline-none hover:bg-orange/90'>
+                <button
+                  className='ml-4 flex h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange px-5 capitalize text-white shadow-sm outline-none hover:bg-orange/90'
+                  onClick={buyNow}
+                >
                   Buy now
                 </button>
               </div>

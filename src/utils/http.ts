@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { isAxiosUnprocessableEntityError } from './utils'
 import { clearAuthFromLS, getAccessTokenFromLS, setAccessTokenToLS, setProfileToLS } from './auth'
 import path from 'src/constants/path'
+import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 // import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 
 class Http {
@@ -57,6 +58,11 @@ class Http {
         const data: any = error.response?.data
 
         if (!isAxiosUnprocessableEntityError<ErrorResponse<AxiosError>>(error)) {
+          if (error.response?.status === HttpStatusCode.Unauthorized) {
+            this.accessToken = ''
+            clearAuthFromLS()
+            return
+          }
           const msg = data.message || error.message || error.message
           toast.error(msg)
         }

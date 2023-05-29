@@ -1,39 +1,21 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import path from 'src/constants/path'
+import { useQuery } from '@tanstack/react-query'
 import { useContext } from 'react'
-import { createSearchParams, Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { logout } from 'src/api/auth.api'
-import { CartSvg, ChevronDownSvg, GlobalSvg, LogoSvg, SearchSvg } from 'src/assets/icons'
-import { AppContext } from 'src/contexts/app.context'
-import { ErrorResponse } from 'src/types/utils.type'
-import { formatCurrency, isAxiosError } from 'src/utils/utils'
-import Popover from '../Popover/Popover'
-import useQueryConfig from 'src/hooks/useQueryConfig'
-import { useForm } from 'react-hook-form'
-import { schema, Schema } from 'src/utils/rules'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { omit } from 'lodash'
-import { purchasesStatus } from 'src/constants/purchase'
+import { Link } from 'react-router-dom'
 import purchaseApi from 'src/api/purchase.api'
-
-type FormData = Pick<Schema, 'name'>
-const nameSchema = schema.pick(['name'])
+import { CartSvg, LogoSvg, SearchSvg } from 'src/assets/icons'
+import path from 'src/constants/path'
+import { purchasesStatus } from 'src/constants/purchase'
+import { AppContext } from 'src/contexts/app.context'
+import useSearchProducts from 'src/hooks/useSearchProducts'
+import { formatCurrency } from 'src/utils/utils'
+import NavHeader from '../NavHeader'
+import Popover from '../Popover/Popover'
 
 const MAX_PURCHASE = 5
 export default function Header() {
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
-  const queryConfig = useQueryConfig()
-  const { handleSubmit, register } = useForm<FormData>({
-    defaultValues: { name: '' },
-    resolver: yupResolver(nameSchema)
-  })
+  const { onSubmitSearch, register } = useSearchProducts()
 
-  const { isAuthenticated, profile, setAuthContext } = useContext(AppContext)
-  const logoutMutation = useMutation({
-    mutationFn: logout
-  })
+  const { isAuthenticated } = useContext(AppContext)
 
   const { data: purchasesIncartData } = useQuery({
     queryKey: ['purchase', { status: purchasesStatus.inCart }],
@@ -43,90 +25,10 @@ export default function Header() {
 
   const purchasesIncart = purchasesIncartData?.data.data
 
-  const handleLogout = async () => {
-    logoutMutation.mutate(undefined, {
-      onSuccess: (res) => {
-        toast.success(res.data.message)
-        // setIsAuthenticated(false)
-        // setProfile(null)
-        setAuthContext(null)
-        queryClient.removeQueries(['purchase', { status: purchasesStatus.inCart }])
-      },
-      onError: (error) => {
-        if (isAxiosError<ErrorResponse<unknown>>(error)) {
-          toast.error(error.response?.data.message)
-        } else {
-          toast.error('ERRRRRRR!!!')
-        }
-      }
-    })
-  }
-
-  const onSubmitSearch = handleSubmit((data) => {
-    navigate({
-      pathname: path.home,
-      search: createSearchParams(omit({ ...queryConfig, name: data.name }, ['sort_by', 'order'])).toString()
-    })
-  })
-
   return (
     <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 text-white'>
       <div className='container'>
-        <div className='flex justify-end'>
-          <Popover
-            renderPopover={
-              <div className='flex flex-col py-2 px-3 pr-20 pl-3'>
-                <button className='py-2 px-3 text-left hover:text-orange'>Vietnamese</button>
-                <button className='py-2 px-3 text-left hover:text-orange'>English</button>
-              </div>
-            }
-            className='flex cursor-pointer items-center py-1 hover:text-white/70'
-          >
-            <GlobalSvg className='h-5 w-5' />
-            <span className='mx-1'>Vietnamese</span>
-            <ChevronDownSvg className='h-5 w-5' />
-          </Popover>
-
-          {isAuthenticated && (
-            <Popover
-              className='ml-6 flex cursor-pointer items-center py-1  hover:text-white/70'
-              renderPopover={
-                <div className='flex flex-col py-3 px-4'>
-                  <Link to={path.profile} className='py-2 px-3 text-left hover:text-orange'>
-                    My account
-                  </Link>
-                  <Link to='/' className='py-2 px-3 text-left hover:text-orange'>
-                    Orders
-                  </Link>
-                  <button className='py-2 px-3 text-left hover:text-orange' onClick={handleLogout}>
-                    Logout
-                  </button>
-                </div>
-              }
-              as={'span'}
-            >
-              <div className='mr-2 h-5 w-5 flex-shrink-0'>
-                <img
-                  src='https://i1-giaitri.vnecdn.net/2022/12/15/avatar-2-1-jpeg-2238-1671050566.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=Gjwi0rqvUSZXSzXx1YrqaA'
-                  alt='avatar'
-                  className='h-full w-full rounded-full object-cover'
-                />
-              </div>
-              <div>{profile?.name || profile?.email}</div>
-            </Popover>
-          )}
-          {!isAuthenticated && (
-            <div className='flex items-center'>
-              <Link to={path.register} className='mx-3 capitalize hover:text-white/70'>
-                Register
-              </Link>
-              <div className='h-4 border-r-[1px] border-r-white/40' />
-              <Link to={path.login} className='mx-3 capitalize hover:text-white/70'>
-                Login
-              </Link>
-            </div>
-          )}
-        </div>
+        <NavHeader />
         <div className='mt-4 grid grid-cols-12 items-end gap-4'>
           <Link to='/' className='col-span-2'>
             <LogoSvg className='h-11 w-full fill-white' />
@@ -149,7 +51,7 @@ export default function Header() {
               placement='bottom-end'
               className=''
               renderPopover={
-                <div className='relative max-w-[400px] rounded-sm bg-white text-sm shadow-md'>
+                <div className='relative min-w-[350px] max-w-[400px] rounded-sm bg-white text-sm shadow-md'>
                   {!purchasesIncart?.length && <div className='p-2'>No products in the cart </div>}
                   {purchasesIncart?.length && (
                     <div className='p-2'>
