@@ -3,7 +3,7 @@ import router from './router'
 
 function App() {
   const routerElements = useRouteElements(router)
-  return <div>{routerElements}</div>
+  return <>{routerElements}</>
 }
 
 export default App
