@@ -58,13 +58,12 @@ class Http {
         const data: any = error.response?.data
 
         if (!isAxiosUnprocessableEntityError<ErrorResponse<AxiosError>>(error)) {
-          if (error.response?.status === HttpStatusCode.Unauthorized) {
-            this.accessToken = ''
-            clearAuthFromLS()
-            return
-          }
           const msg = data.message || error.message || error.message
           toast.error(msg)
+        }
+
+        if(error.response?.status === HttpStatusCode.Unauthorized) {
+          clearAuthFromLS()
         }
 
         // if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
