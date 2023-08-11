@@ -1,5 +1,7 @@
 import axios, { AxiosError } from 'axios'
+import config from 'src/constants/config'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
+import userImage from 'src/assets/images/user.svg'
 
 const SEPERATOR_Id = '-i-'
 
@@ -39,3 +41,5 @@ export const getIdFromNameId = (nameId: string) => {
   const arr = nameId.split(`${SEPERATOR_Id}`)
   return arr[arr.length - 1]
 }
+
+export const getAvatarUrl = (avatarName?: string) => (avatarName ? `${config.baseUrl}images/${avatarName}` : userImage)

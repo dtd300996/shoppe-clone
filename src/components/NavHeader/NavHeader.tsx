@@ -8,7 +8,7 @@ import path from 'src/constants/path'
 import { purchasesStatus } from 'src/constants/purchase'
 import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponse } from 'src/types/utils.type'
-import { isAxiosError } from 'src/utils/utils'
+import { getAvatarUrl, isAxiosError } from 'src/utils/utils'
 import Popover from '../Popover'
 
 export default function NavHeader() {
@@ -72,11 +72,7 @@ export default function NavHeader() {
           as={'span'}
         >
           <div className='mr-2 h-5 w-5 flex-shrink-0'>
-            <img
-              src='https://i1-giaitri.vnecdn.net/2022/12/15/avatar-2-1-jpeg-2238-1671050566.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=Gjwi0rqvUSZXSzXx1YrqaA'
-              alt='avatar'
-              className='h-full w-full rounded-full object-cover'
-            />
+            <img src={getAvatarUrl(profile?.avatar)} alt='avatar' className='h-full w-full rounded-full object-cover' />
           </div>
           <div>{profile?.name || profile?.email}</div>
         </Popover>

@@ -110,3 +110,17 @@ export type EmailPasswordSchema = yup.InferType<typeof emailPasswordSchema>
 
 export const priceSchema = schema.pick(['price_min', 'price_max'])
 export type PriceSchema = NoUndefinedField<Pick<Schema, 'price_min' | 'price_max'>>
+
+export const userSchema = yup.object({
+  name: yup.string().max(160, 'Maximum length 170 characters'),
+  phone: yup.string().max(20, 'Maximum length 20 characters'),
+  address: yup.string().max(160, 'Maximum length 170 characters'),
+  avatar: yup.string().max(1000, 'Maximum length 1000 characters'),
+  date_of_birth: yup.date().max(new Date(), 'Please choose a date in the past'),
+  password: schema.fields['password'],
+  new_password: schema.fields['password'],
+  confirm_password: schema.fields['confirm_password']
+})
+
+export type UserSchema = yup.InferType<typeof userSchema>
+
