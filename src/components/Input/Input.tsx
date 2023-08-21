@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from 'react'
+import { InputHTMLAttributes, useMemo, useState } from 'react'
 import { RegisterOptions, UseFormRegister } from 'react-hook-form'
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
@@ -20,10 +20,30 @@ export default function Input({
   ...restProps
 }: Props) {
   const registerResult = register && name ? register(name, rules) : {}
+  const { type } = restProps
+  const [showPassword, setShowPassword] = useState(false)
+  const currentType = useMemo(() => (type === 'password' && showPassword ? 'text' : type), [type])
+
+  const handleTogglePassword = () => {
+    if (type === 'password') {
+      setShowPassword((prev) => !prev)
+    }
+  }
 
   return (
     <div className={className}>
-      <input {...restProps} className={classNameInput} {...registerResult} />
+      <div className='relative'>
+        <input {...restProps} className={classNameInput} {...registerResult} type={currentType} />
+        {type === 'password' && (
+          <button
+            className='absolute top-[50%] right-1 w-[50px] translate-y-[-50%] bg-gray-200 p-1'
+            type='button'
+            onClick={handleTogglePassword}
+          >
+            {showPassword ? 'hide' : 'show'}
+          </button>
+        )}
+      </div>
       <div className={classNameError}>{errorMessage}</div>
     </div>
   )
