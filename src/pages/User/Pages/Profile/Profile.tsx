@@ -1,22 +1,29 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import React, { useContext, useEffect } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 import userApi from 'src/api/user.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
+import InputFile from 'src/components/InputFile'
 import InputNumber from 'src/components/InputNumber'
-import { UserSchema, userSchema } from 'src/utils/rules'
-import DateSelect from '../../components/DateSelect'
-import { toast } from 'react-toastify'
 import { AppContext } from 'src/contexts/app.context'
+import { ErrorResponse } from 'src/types/utils.type'
 import { setProfileToLS } from 'src/utils/auth'
+import { UserSchema, userSchema } from 'src/utils/rules'
+import { getAvatarUrl, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import DateSelect from '../../components/DateSelect'
 
 type FormData = Pick<UserSchema, 'name' | 'address' | 'phone' | 'date_of_birth' | 'avatar'>
+type FormDataError = Omit<FormData, 'date_of_birth'> & { date_of_birth?: string }
 
 const profileSchema = userSchema.pick(['name', 'address', 'phone', 'date_of_birth', 'avatar'])
 
 export default function Profile() {
+  const [file, setFile] = useState<File | undefined>()
+  const previewImage = useMemo(() => (file ? URL.createObjectURL(file) : null), [file])
+
   const { setProfile } = useContext(AppContext)
   const {
     register,
@@ -40,9 +47,12 @@ export default function Profile() {
     queryFn: userApi.getProfile
   })
 
-  const updateProfileMutation = useMutation(userApi.updateProfile)
+  const { isLoading, ...updateProfileMutation } = useMutation(userApi.updateProfile)
+  const uploadAvatarMutation = useMutation(userApi.uploadAvatar)
 
   const profile = profileData?.data.data
+
+  const avatar = profile?.avatar
 
   useEffect(() => {
     if (profile) {
@@ -53,23 +63,63 @@ export default function Profile() {
     }
   }, [profile, setValue])
 
+  // Flow 1 (spam upload)
+  // Click upload: call api upload img => url
+  // Submit: call api update profile
+
+  // Flow 2
+  // Click upload: KHÔNG upload lên sv
+  // Submit: call api upload img => url => call api update profile
+
   const onSubmit = handleSubmit(async ({ date_of_birth, ...data }) => {
-    const res = await updateProfileMutation.mutateAsync({
-      ...data,
-      date_of_birth: date_of_birth?.toISOString()
-    })
-    const profile = res.data.data
-    setProfile(profile)
-    setProfileToLS(profile)
-    refetch()
-    toast.success(res.data.message)
+    try {
+      if (isLoading) return
+      let avatarName = avatar
+      if (file) {
+        const form = new FormData()
+        form.append('image', file)
+        const uploadRes = await uploadAvatarMutation.mutateAsync(form)
+        avatarName = uploadRes.data.data
+      }
+
+      const res = await updateProfileMutation.mutateAsync({
+        ...data,
+        date_of_birth: date_of_birth?.toISOString(),
+        avatar: avatarName
+      })
+      const profile = res.data.data
+      setProfile(profile)
+      setProfileToLS(profile)
+      refetch()
+      toast.success(res.data.message)
+    } catch (error) {
+      console.log({ error })
+
+      if (isAxiosUnprocessableEntityError<ErrorResponse<FormDataError>>(error)) {
+        const formError = error.response?.data.data
+        if (formError) {
+          Object.keys(formError).forEach((key) => {
+            const newKey = key as keyof FormDataError
+
+            setError(newKey, {
+              message: formError[newKey],
+              type: 'Server'
+            })
+          })
+        }
+      }
+    }
   })
+
+  const handleChangeFile = (file: File) => {
+    setFile(file)
+  }
 
   return (
     <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
       <div className='border-b border-b-gray-200 py-6'>
-        <h1 className='text-lg font-medium capitalize text-gray-900'>Hồ sơ của tôi</h1>
-        <div className='mt-1 text-sm text-gray-700'>Quản lý thông tin hồ sơ để bảo mật tài khoản</div>
+        <h1 className='text-lg font-medium capitalize text-gray-900'>My profile</h1>
+        <div className='mt-1 text-sm text-gray-700'>Manage profile information for account security</div>
       </div>
       <form onSubmit={onSubmit} className='mt-8 flex flex-col-reverse md:flex-row md:items-start'>
         <div className='form mt-6 flex-grow md:mt-0 md:pr-20'>
@@ -144,7 +194,10 @@ export default function Profile() {
           <div className='mt-6 flex flex-col flex-wrap sm:flex-row'>
             <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right' />
             <div className='sm:w-[80%] sm:pl-5'>
-              <Button className='round-sm hover:bg-range/80 flex h-9 items-center bg-orange px-5 text-center text-sm text-white'>
+              <Button
+                className='round-sm hover:bg-range/80 flex h-9 items-center bg-orange px-5 text-center text-sm text-white'
+                disabled={isLoading}
+              >
                 Save
               </Button>
             </div>
@@ -154,18 +207,17 @@ export default function Profile() {
           <div className='flex flex-col items-center'>
             <div className='my-5 h-24 w-24'>
               <img
-                src='https://cf.shopee.vn/file/d04ea22afab6e6d250a370d7ccc2e675_tn'
+                // src='https://cf.shopee.vn/file/d04ea22afab6e6d250a370d7ccc2e675_tn'
+                src={
+                  previewImage ||
+                  getAvatarUrl(avatar) ||
+                  'https://cf.shopee.vn/file/d04ea22afab6e6d250a370d7ccc2e675_tn'
+                }
                 alt=''
-                className='object-fit w-full rounded-full'
+                className='object-fit h-full w-full rounded-full'
               />
             </div>
-            <input type='file' className='hidden' accept='.jpg,.jpeg,.pgn' />
-            <button
-              type='button'
-              className='flex h-10 items-center justify-end rounded-sm border bg-white px-6 text-sm text-gray-600 shadow-sm'
-            >
-              Choose image
-            </button>
+            <InputFile onChange={handleChangeFile} />
             <div>
               <div className='mt-3 text-gray-400'>
                 <div>maximum size 1MB</div>

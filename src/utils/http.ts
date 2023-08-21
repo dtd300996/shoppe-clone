@@ -6,6 +6,7 @@ import { isAxiosUnprocessableEntityError } from './utils'
 import { clearAuthFromLS, getAccessTokenFromLS, setAccessTokenToLS, setProfileToLS } from './auth'
 import path from 'src/constants/path'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
+import config from 'src/constants/config'
 // import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 
 class Http {
@@ -15,7 +16,8 @@ class Http {
   constructor() {
     this.accessToken = getAccessTokenFromLS()
     this.instance = axios.create({
-      baseURL: 'https://api-ecom.duthanhduoc.com/',
+      // baseURL: 'https://api-ecom.duthanhduoc.com/',
+      baseURL: config.baseUrl,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
@@ -58,7 +60,7 @@ class Http {
         const data: any = error.response?.data
 
         if (!isAxiosUnprocessableEntityError<ErrorResponse<AxiosError>>(error)) {
-          const msg = data.message || error.message || error.message
+          const msg = data?.message || error?.message || 'System error'
           toast.error(msg)
         }
 
