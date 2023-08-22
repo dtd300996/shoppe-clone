@@ -4,9 +4,13 @@ import { SuccessResponse } from './utils.type'
 export type AuthResponse = SuccessResponse<{
   access_token: string
   expires: string | number
-  refresh_token?: string
-  expires_refresh_token?: number
+  refresh_token: string
+  expires_refresh_token: number
   user: User
+}>
+
+export type RefreshTokenResponse = SuccessResponse<{
+  access_token: string
 }>
 
 // const auth: AuthResponse = {

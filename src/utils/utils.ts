@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios'
 import config from 'src/constants/config'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 import userImage from 'src/assets/images/user.svg'
+import { ErrorResponse } from 'src/types/utils.type'
 
 const SEPERATOR_Id = '-i-'
 
@@ -14,6 +15,23 @@ export const isAxiosError = <T>(error: unknown): error is AxiosError<T> => {
 export const isAxiosUnprocessableEntityError = <FormError>(error: unknown): error is AxiosError<FormError> => {
   // eslint-disable-next-line import/no-named-as-default-member
   return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
+}
+
+export const isAxiosUnauthorizedError = <UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> => {
+  // eslint-disable-next-line import/no-named-as-default-member
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.Unauthorized
+}
+
+export const isAxiosExpiredTokenError = <UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> => {
+  // eslint-disable-next-line import/no-named-as-default-member
+  return (
+    isAxiosUnauthorizedError<
+      ErrorResponse<{
+        name: string
+        message: string
+      }>
+    >(error) && error.response?.data?.data?.name === 'EXPIRED_TOKEN'
+  )
 }
 
 export const formatCurrency = (currency: number) => new Intl.NumberFormat('de-DE').format(currency)
