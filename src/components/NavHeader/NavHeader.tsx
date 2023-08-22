@@ -10,6 +10,7 @@ import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponse } from 'src/types/utils.type'
 import { getAvatarUrl, isAxiosError } from 'src/utils/utils'
 import Popover from '../Popover'
+import { useTranslation } from 'react-i18next'
 
 export default function NavHeader() {
   const { isAuthenticated, profile, setAuthContext } = useContext(AppContext)
@@ -37,19 +38,31 @@ export default function NavHeader() {
       }
     })
   }
+
+  const { i18n } = useTranslation()
+  const currentLng = i18n.language
+  const changeLanguage = (lng: 'en' | 'vi') => () => {
+    i18n.changeLanguage(lng)
+    localStorage.setItem('i18n-lng', lng)
+  }
+
   return (
     <div className='flex justify-end'>
       <Popover
         renderPopover={
           <div className='flex flex-col py-2 px-3 pr-20 pl-3'>
-            <button className='py-2 px-3 text-left hover:text-orange'>Vietnamese</button>
-            <button className='py-2 px-3 text-left hover:text-orange'>English</button>
+            <button className='py-2 px-3 text-left hover:text-orange' onClick={changeLanguage('vi')}>
+              Vietnamese
+            </button>
+            <button className='py-2 px-3 text-left hover:text-orange' onClick={changeLanguage('en')}>
+              English
+            </button>
           </div>
         }
         className='flex cursor-pointer items-center py-1 hover:text-white/70'
       >
         <GlobalSvg className='h-5 w-5' />
-        <span className='mx-1'>Vietnamese</span>
+        <span className='mx-1'>{currentLng}</span>
         <ChevronDownSvg className='h-5 w-5' />
       </Popover>
 

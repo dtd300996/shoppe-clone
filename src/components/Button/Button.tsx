@@ -11,7 +11,7 @@ export default function Button({ className, isLoading, children, ...restProps }:
   return (
     <button {...restProps} className={newClassName}>
       {isLoading && <LoadingSvg className='mr-2 h-4 w-4 animate-spin fill-white text-gray-200' />}
-      {children}
+      <>{children}</>
     </button>
   )
 }

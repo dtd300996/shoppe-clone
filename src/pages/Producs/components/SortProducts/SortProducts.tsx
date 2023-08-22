@@ -1,10 +1,12 @@
 import classNames from 'classnames'
 import omit from 'lodash/omit'
+import { useTranslation } from 'react-i18next'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import { ChevronLeftSvg, ChevronRightSvg } from 'src/assets/icons'
 import { SORT_BY, ORDER } from 'src/constants/product'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
 import { ProductsConfig } from 'src/types/product.type'
+
 type Props = {
   pageSize: number
   queryConfig: QueryConfig
@@ -35,6 +37,8 @@ export default function SortProducts({ queryConfig, pageSize, pathname }: Props)
     })
   }
 
+  const { t } = useTranslation()
+
   return (
     <div className='bg-gray-300/40 py-4 px-3'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
@@ -47,7 +51,7 @@ export default function SortProducts({ queryConfig, pageSize, pathname }: Props)
             })}
             onClick={handleSort(SORT_BY.view)}
           >
-            Popular
+            {t('category.popular')}
           </button>
           <button
             className={classNames('h-8 px-4 text-center text-sm capitalize ', {
