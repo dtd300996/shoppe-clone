@@ -15,6 +15,7 @@ import { purchasesStatus } from 'src/constants/purchase'
 import { AppContext } from 'src/contexts/app.context'
 import { toast } from 'react-toastify'
 import path from 'src/constants/path'
+import NotFound from '../NotFound'
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
@@ -150,7 +151,8 @@ export default function ProductDetail() {
     )
   }
 
-  if (!product) return null
+  if (!product) return <NotFound />
+  
   return (
     <div className='bg-gray-200 py-6'>
       <div className='container'>

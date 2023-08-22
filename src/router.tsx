@@ -4,7 +4,7 @@ import Register from './pages/Resister'
 import ResisterLayout from './Layout/ResisterLayout'
 import MainLayout from './Layout/MainLayout'
 import { Navigate, Outlet, RouteObject } from 'react-router-dom'
-import { useContext } from 'react'
+import { Suspense, lazy, useContext } from 'react'
 import { AppContext } from './contexts/app.context'
 import path from './constants/path'
 import ProductDetail from './pages/ProductDetail'
@@ -14,6 +14,7 @@ import UserLayout from './pages/User/layout/UserLayout'
 import Profile from './pages/User/Pages/Profile'
 import ChangePasswork from './pages/User/Pages/ChangePassword'
 import HistoryPurchase from './pages/User/Pages/HistoryPurchase'
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -112,6 +113,14 @@ const router: RouteObject[] = [
         )
       }
     ]
+  },
+  {
+    path: '*',
+    element: (
+      <Suspense>
+        <NotFound />
+      </Suspense>
+    )
   }
 ]
 
