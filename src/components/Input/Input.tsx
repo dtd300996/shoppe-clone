@@ -22,7 +22,7 @@ export default function Input({
   const registerResult = register && name ? register(name, rules) : {}
   const { type } = restProps
   const [showPassword, setShowPassword] = useState(false)
-  const currentType = useMemo(() => (type === 'password' && showPassword ? 'text' : type), [type])
+  const currentType = useMemo(() => (type === 'password' && showPassword ? 'text' : type), [type, showPassword])
 
   const handleTogglePassword = () => {
     if (type === 'password') {
