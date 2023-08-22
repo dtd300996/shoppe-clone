@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import { ChevronLeftSvg, ChevronRightSvg } from 'src/assets/icons'
 import { SORT_BY, ORDER } from 'src/constants/product'

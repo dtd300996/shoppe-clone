@@ -1,4 +1,8 @@
-import { isUndefined, omitBy } from 'lodash'
+// lodash khong co tinh nang tree shaking
+// import { isUndefined, omitBy } from 'lodash'
+// import truc tiep (optimize)
+import omitBy from 'lodash/omitBy'
+import isUndefined from 'lodash/isUndefined'
 import { ProductsConfig } from 'src/types/product.type'
 import useQueryParams from './useQueryParams'
 
