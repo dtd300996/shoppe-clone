@@ -1,19 +1,31 @@
-import Login from './pages/Login'
-import Products from './pages/Producs'
-import Register from './pages/Resister'
+
 import ResisterLayout from './Layout/ResisterLayout'
 import MainLayout from './Layout/MainLayout'
 import { Navigate, Outlet, RouteObject } from 'react-router-dom'
 import { Suspense, lazy, useContext } from 'react'
 import { AppContext } from './contexts/app.context'
 import path from './constants/path'
-import ProductDetail from './pages/ProductDetail'
-import Cart from './pages/Cart'
 import CartLayout from './Layout/CartLayout'
-import UserLayout from './pages/User/layout/UserLayout'
-import Profile from './pages/User/Pages/Profile'
-import ChangePasswork from './pages/User/Pages/ChangePassword'
-import HistoryPurchase from './pages/User/Pages/HistoryPurchase'
+// import ProductDetail from './pages/ProductDetail'
+// import Cart from './pages/Cart'
+// import Login from './pages/Login'
+// import Products from './pages/Producs'
+// import Register from './pages/Resister'
+// import UserLayout from './pages/User/layout/UserLayout'
+// import Profile from './pages/User/Pages/Profile'
+// import ChangePasswork from './pages/User/Pages/ChangePassword'
+// import HistoryPurchase from './pages/User/Pages/HistoryPurchase'
+
+const Login = lazy(() => import('./pages/Login'))
+const Products = lazy(() => import('./pages/Producs'))
+const Register = lazy(() => import('./pages/Resister'))
+const ProductDetail = lazy(() => import('./pages/ProductDetail'))
+const Cart = lazy(() => import('./pages/Cart'))
+const UserLayout = lazy(() => import('./pages/User/layout/UserLayout'))
+const Profile = lazy(() => import('./pages/User/Pages/Profile'))
+const ChangePasswork = lazy(() => import('./pages/User/Pages/ChangePassword'))
+const HistoryPurchase = lazy(() => import('./pages/User/Pages/HistoryPurchase'))
+
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 function ProtectedRoute() {
@@ -33,7 +45,9 @@ const router: RouteObject[] = [
     index: true,
     element: (
       <MainLayout>
-        <Products />
+        <Suspense fallback={<>Loading...</>}>
+          <Products />
+        </Suspense>
       </MainLayout>
     )
   },
@@ -55,7 +69,9 @@ const router: RouteObject[] = [
         path: path.cart,
         element: (
           <CartLayout>
-            <Cart />
+            <Suspense>
+              <Cart />
+            </Suspense>
           </CartLayout>
         )
       },
@@ -63,21 +79,35 @@ const router: RouteObject[] = [
         path: path.user,
         element: (
           <MainLayout>
-            <UserLayout />
+            <Suspense>
+              <UserLayout />
+            </Suspense>
           </MainLayout>
         ),
         children: [
           {
             path: path.profile,
-            element: <Profile />
+            element: (
+              <Suspense>
+                <Profile />
+              </Suspense>
+            )
           },
           {
             path: path.changePassword,
-            element: <ChangePasswork />
+            element: (
+              <Suspense>
+                <ChangePasswork />
+              </Suspense>
+            )
           },
           {
             path: path.historyPurchase,
-            element: <HistoryPurchase />
+            element: (
+              <Suspense>
+                <HistoryPurchase />
+              </Suspense>
+            )
           }
         ]
       }
@@ -88,7 +118,9 @@ const router: RouteObject[] = [
     index: true,
     element: (
       <MainLayout>
-        <ProductDetail />
+        <Suspense>
+          <ProductDetail />
+        </Suspense>
       </MainLayout>
     )
   },
@@ -100,7 +132,9 @@ const router: RouteObject[] = [
         path: path.login,
         element: (
           <ResisterLayout>
-            <Login />
+            <Suspense>
+              <Login />
+            </Suspense>
           </ResisterLayout>
         )
       },
@@ -108,7 +142,9 @@ const router: RouteObject[] = [
         path: path.register,
         element: (
           <ResisterLayout>
-            <Register />
+            <Suspense>
+              <Register />
+            </Suspense>
           </ResisterLayout>
         )
       }
