@@ -26,7 +26,7 @@ export default function ProductDetail() {
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
 
-  const { data: productDetail } = useQuery({
+  const { data: productDetail, error } = useQuery({
     queryKey: ['product', id],
     queryFn: () => productApi.getProduct(id as string)
   })
@@ -151,8 +151,8 @@ export default function ProductDetail() {
     )
   }
 
-  if (!product) return <NotFound />
-  
+  if (!product) return error ? <NotFound /> : null
+
   return (
     <div className='bg-gray-200 py-6'>
       <div className='container'>
