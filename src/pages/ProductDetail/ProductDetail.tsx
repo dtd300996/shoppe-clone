@@ -16,6 +16,8 @@ import { AppContext } from 'src/contexts/app.context'
 import { toast } from 'react-toastify'
 import path from 'src/constants/path'
 import NotFound from '../NotFound'
+import { Helmet } from 'react-helmet-async'
+import { convert } from 'html-to-text'
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
@@ -155,6 +157,17 @@ export default function ProductDetail() {
 
   return (
     <div className='bg-gray-200 py-6'>
+      <Helmet>
+        <title>{product.name}</title>
+        <meta
+          name='description'
+          content={`${convert(product.description, {
+            limits: {
+              maxInputLength: 150
+            }
+          })} Clone shoppe`}
+        />
+      </Helmet>
       <div className='container'>
         <div className='bg-white p-4 shadow'>
           <div className='grid grid-cols-12 gap-9'>
