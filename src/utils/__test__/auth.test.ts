@@ -62,6 +62,11 @@ describe('profile', () => {
 
     expect(getProfileFromLS()).toEqual(JSON.parse(profile))
   })
+
+  it('profile null dc set + get vao localStorage', () => {
+    localStorage.removeItem('profile')
+    expect(getProfileFromLS()).toBe(null)
+  })
 })
 
 describe('clearAuthFromLS', () => {

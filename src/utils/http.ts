@@ -11,29 +11,32 @@ import {
   setProfileToLS,
   setRefreshTokenToLS
 } from './auth'
-import path from 'src/constants/path'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 import config from 'src/constants/config'
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER } from 'src/api/auth.api'
 // import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 
-class Http {
+export class Http {
   instance: AxiosInstance
   private accessToken: string
   private refreshToken: string
   private refreshTokenRequest: Promise<string> | null
+  private isTesting: boolean
+  private baseURL: string
 
-  constructor() {
+  constructor(baseURL: string = config.baseUrl) {
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
     this.refreshTokenRequest = null
+    this.isTesting = !!localStorage.getItem('testing')
+    this.baseURL = baseURL
 
     this.instance = axios.create({
       // baseURL: 'https://api-ecom.duthanhduoc.com/',
-      baseURL: config.baseUrl,
+      baseURL: this.baseURL,
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
         // 'expire-access-token': 5,
         // 'expire-refresh-token': 20
       }
@@ -130,8 +133,9 @@ class Http {
           //   const msg = data.message || error.message
           //   toast.error(msg)
           // }
-          return Promise.reject(error)
         }
+
+        return Promise.reject(error)
       }
     )
   }
@@ -142,6 +146,9 @@ class Http {
         refresh_token: this.refreshToken
       })
       .then((res) => {
+        if (this.isTesting) {
+          console.log('refresh token')
+        }
         const { access_token } = res.data.data
         this.accessToken = access_token
         setAccessTokenToLS(access_token)

@@ -11,6 +11,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 export default defineConfig({
   plugins: [react(), svgr(), visualizer()] as any,
   test: {
+    testTimeout: 15000,
     environment: 'jsdom' // or 'node'
   },
   server: {
