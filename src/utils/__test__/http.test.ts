@@ -1,7 +1,7 @@
 import { beforeEach, describe, it, expect } from 'vitest'
 import { Http } from '../http'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
-import { getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToLS, setRefreshTokenToLS } from '../auth'
+import { getAccessTokenFromLS, getRefreshTokenFromLS } from '../auth'
 
 describe('http axios', () => {
   let http = new Http().instance

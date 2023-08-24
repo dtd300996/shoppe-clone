@@ -1,4 +1,3 @@
-import path from 'src/constants/path'
 import { Product, Products, ProductsConfig } from 'src/types/product.type'
 import { SuccessResponse } from 'src/types/utils.type'
 import http from 'src/utils/http'

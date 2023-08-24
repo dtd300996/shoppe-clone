@@ -75,7 +75,7 @@ export default function Cart() {
         })) || []
       )
     })
-  }, [purchasesInCart, purchaseIdFromLocation])
+  }, [purchasesInCart, purchaseIdFromLocation, setExtendedPurchases])
 
   useEffect(() => {
     return () => {

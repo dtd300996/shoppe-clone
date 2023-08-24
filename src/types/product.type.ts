@@ -1,4 +1,3 @@
-import { SORT_BY } from './../constants/product'
 export interface Product {
   _id: string
   images: string[]

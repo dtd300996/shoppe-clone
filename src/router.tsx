@@ -1,4 +1,3 @@
-
 import ResisterLayout from './Layout/ResisterLayout'
 import MainLayout from './Layout/MainLayout'
 import { Navigate, Outlet, RouteObject } from 'react-router-dom'
