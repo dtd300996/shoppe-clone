@@ -9,7 +9,13 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), svgr(), visualizer()] as any,
+  plugins: [
+    react({
+      fastRefresh: false
+    }),
+    svgr(),
+    visualizer()
+  ] as any,
   test: {
     testTimeout: 15000,
     environment: 'jsdom' // or 'node'
