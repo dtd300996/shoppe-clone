@@ -1,7 +1,7 @@
-import { describe, test, expect } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
-import { logScreen, renderWithRoute } from './utils/testUtils'
+import { describe, expect, test } from 'vitest'
 import path from './constants/path'
+import { renderWithRouter } from './utils/testUtils'
 
 describe('App', async () => {
   test('App render and redirect page', async () => {
@@ -9,7 +9,7 @@ describe('App', async () => {
     // render(<App />, { wrapper: BrowserRouter })
     // const user = userEvent.setup()
 
-    const { user } = renderWithRoute()
+    const { user } = renderWithRouter()
 
     /**
      * waitFor se run callback 1 vai lan hoac expect pass
@@ -45,7 +45,7 @@ describe('App', async () => {
     //   </MemoryRouter>
     // )
 
-    renderWithRoute({ route: badRoute })
+    renderWithRouter({ route: badRoute })
 
     await waitFor(() => {
       expect(document.querySelector('title')?.textContent).toBe('404 Not Found')
@@ -56,13 +56,11 @@ describe('App', async () => {
 
   test('Render register page', async () => {
     const route = path.register
-    renderWithRoute({ route })
+    renderWithRouter({ route })
 
     await waitFor(() => {
       expect(document.querySelector('title')?.textContent).toMatch(/register/i)
       expect(screen.getByText(/Do you already have an account?/).textContent).toMatch('Do you already have an account?')
     })
-
-    await logScreen()
   })
 })

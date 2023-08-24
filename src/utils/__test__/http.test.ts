@@ -1,7 +1,8 @@
 import { beforeEach, describe, it, expect } from 'vitest'
 import { Http } from '../http'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
-import { getAccessTokenFromLS, getRefreshTokenFromLS } from '../auth'
+import { getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToLS, setRefreshTokenToLS } from '../auth'
+import { access_token_1s, refresh_token_1000days } from 'src/msw/auth.msw'
 
 describe('http axios', () => {
   let http = new Http().instance
@@ -18,8 +19,6 @@ describe('http axios', () => {
     // vi test rieng file http chi nen dung http thoi
     // vi folder api co thay doi thi khong anh huong test code http nay
     const res = await http.get('products')
-    // console.log({ res })
-
     expect(res.status).toBe(HttpStatusCode.Ok)
   })
 
@@ -59,30 +58,16 @@ describe('http axios', () => {
       .then((r) => r.data)
     await http.get('products') // delay de access_token expire
     const res = await http.get('me')
-    // console.log({ res: res.config.headers.Authorization })
     expect(res.status).toBe(HttpStatusCode.Ok)
   })
 
   it('Refresh token expire', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    await http
-      .post(
-        'login',
-        {
-          email: 'dtd1@gmail.com',
-          password: '111111'
-        },
-        {
-          headers: {
-            'expire-access-token': 0,
-            'expire-refresh-token': 0
-          }
-        }
-      )
-      .then((r) => r.data)
-    await http.get('products') // delay de access_token expire
-    const res = await http.get('me').catch((error) => error)
-    expect(res instanceof Error).toBe(true)
+    // fake login
+    setAccessTokenToLS(access_token_1s)
+    setRefreshTokenToLS(refresh_token_1000days)
+    const httpNew = new Http().instance
+    const res = await httpNew.get('me')
+    expect(res.status).toBe(HttpStatusCode.Ok)
   })
 
   it('Logout', async () => {

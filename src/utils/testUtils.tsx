@@ -1,41 +1,61 @@
-import { render, screen, waitFor, type waitForOptions } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BrowserRouter } from 'react-router-dom'
 import App from 'src/App'
-import { expect } from 'vitest'
+import { AppProvider, getInitialAppContext } from 'src/contexts/app.context'
 
-const delay = (time: number) =>
+export const delay = (time: number) =>
   new Promise((resolve) => {
     setTimeout(() => {
       resolve(true)
     }, time)
   })
 
-export const logScreen = async (
-  body: HTMLElement = document.body.parentElement as HTMLElement,
-  options?: waitForOptions
-) => {
-  const { timeout = 1000 } = options || {}
-  await waitFor(
-    async () => {
-      expect(await delay(timeout - 100)).toBe(true)
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false
+      },
+      mutations: {
+        retry: false
+      }
     },
-    { ...options, timeout }
+    logger: {
+      log: console.log,
+      warn: console.warn,
+      // no more errors on the console
+      error: () => null
+    }
+  })
+
+  const Provider = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
-  screen.debug(body as HTMLElement, 999999999999999)
+
+  return Provider
 }
+const Provider = createWrapper()
 
-export const renderWithRoute = ({ route = '/' } = {}) => {
+export const renderWithRouter = ({ route = '/' } = {}) => {
   window.history.pushState({}, 'Test page', route) // khong can dung MemoryRouter
-
   // render(
   //   <MemoryRouter initialEntries={[route]}>
   //     <App />
   //   </MemoryRouter>
   // )
+  const defaultValueAppContext = getInitialAppContext()
 
   return {
     user: userEvent.setup(),
-    ...render(<App />, { wrapper: BrowserRouter })
+    ...render(
+      <Provider>
+        <AppProvider defaultValue={defaultValueAppContext}>
+          <App />
+        </AppProvider>
+      </Provider>,
+      { wrapper: BrowserRouter }
+    )
   }
 }
