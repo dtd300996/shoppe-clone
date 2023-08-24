@@ -18,6 +18,7 @@ export default defineConfig({
   ] as any,
   test: {
     testTimeout: 15000,
+    setupFiles: path.resolve(__dirname, './vitest.setup.js'),
     environment: 'jsdom' // or 'node'
   },
   server: {
