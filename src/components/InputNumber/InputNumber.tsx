@@ -31,7 +31,13 @@ export default forwardRef<HTMLInputElement, InputNumberProps>(function InputNumb
   }
   return (
     <div className={className}>
-      <input {...restProps} className={classNameInput} onChange={handleChange} ref={ref} value={value || localValue} />
+      <input
+        {...restProps}
+        className={classNameInput}
+        onChange={handleChange}
+        ref={ref}
+        value={value === undefined ? localValue : value}
+      />
       <div className={classNameError}>{errorMessage}</div>
     </div>
   )
