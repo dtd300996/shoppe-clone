@@ -96,7 +96,7 @@ export class Http {
         // 3. token expire
 
         if (isAxiosUnauthorizedError<ErrorResponse<AxiosError>>(error)) {
-          const config = error.response?.config || {}
+          const config = error.response?.config || { headers: {}, url: '' }
           const { url } = config
           // 3.
           // case token expire & request != refresh => call refresh token

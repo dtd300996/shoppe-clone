@@ -11,7 +11,7 @@ interface HeaderProps {
   user?: User;
   onLogin: () => void;
   onLogout: () => void;
-  onCreateAccount: () => void;
+  onCreateAccount: () => any;
 }
 
 export const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps) => (

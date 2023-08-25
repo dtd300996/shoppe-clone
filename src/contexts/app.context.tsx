@@ -40,8 +40,8 @@ export const AppProvider = ({
   children,
   defaultValue = initialAppContext
 }: {
-  children: React.ReactNode
-  defaultValue: AppContextInterface
+  children?: React.ReactNode
+  defaultValue?: AppContextInterface
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(defaultValue.isAuthenticated)
   const [profile, setProfile] = useState<ProfileType>(defaultValue.profile)
