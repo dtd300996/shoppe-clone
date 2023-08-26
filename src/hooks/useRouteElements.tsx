@@ -43,71 +43,36 @@ function RejectedRoute() {
 export default function useRouteElements() {
   const routeElements = useRoutes([
     {
-      path: path.home,
-      index: true,
+      path: path.cart,
       element: (
-        <MainLayout>
-          <Suspense fallback={<>Loading...</>}>
-            <Products />
+        <CartLayout>
+          <Suspense>
+            <Cart />
           </Suspense>
-        </MainLayout>
+        </CartLayout>
       )
     },
     {
       path: '',
-      element: <ProtectedRoute />,
+      element: <RejectedRoute />,
       children: [
-        // {
-        //   path: path.profile,
-        //   element: (
-        //     <MainLayout>
-        //       <UserLayout>
-        //         <Profile />
-        //       </UserLayout>
-        //     </MainLayout>
-        //   )
-        // }
         {
-          path: path.cart,
-          element: (
-            <CartLayout>
-              <Suspense>
-                <Cart />
-              </Suspense>
-            </CartLayout>
-          )
-        },
-        {
-          path: path.user,
-          element: (
-            <MainLayout>
-              <Suspense>
-                <UserLayout />
-              </Suspense>
-            </MainLayout>
-          ),
+          path: '',
+          element: <ResisterLayout />,
           children: [
             {
-              path: path.profile,
+              path: path.login,
               element: (
                 <Suspense>
-                  <Profile />
+                  <Login />
                 </Suspense>
               )
             },
             {
-              path: path.changePassword,
+              path: path.register,
               element: (
                 <Suspense>
-                  <ChangePasswork />
-                </Suspense>
-              )
-            },
-            {
-              path: path.historyPurchase,
-              element: (
-                <Suspense>
-                  <HistoryPurchase />
+                  <Register />
                 </Suspense>
               )
             }
@@ -116,49 +81,76 @@ export default function useRouteElements() {
       ]
     },
     {
-      path: path.productDetail,
-      index: true,
-      element: (
-        <MainLayout>
-          <Suspense>
-            <ProductDetail />
-          </Suspense>
-        </MainLayout>
-      )
-    },
-    {
       path: '',
-      element: <RejectedRoute />,
+      element: <MainLayout />,
       children: [
         {
-          path: path.login,
+          path: path.home,
+          index: true,
           element: (
-            <ResisterLayout>
-              <Suspense>
-                <Login />
-              </Suspense>
-            </ResisterLayout>
+            <Suspense fallback={<>Loading...</>}>
+              <Products />
+            </Suspense>
           )
         },
         {
-          path: path.register,
+          path: path.productDetail,
+          index: true,
           element: (
-            <ResisterLayout>
-              <Suspense>
-                <Register />
-              </Suspense>
-            </ResisterLayout>
+            <Suspense>
+              <ProductDetail />
+            </Suspense>
+          )
+        },
+        {
+          path: '',
+          element: <ProtectedRoute />,
+          children: [
+            {
+              path: path.user,
+              element: (
+                <Suspense>
+                  <UserLayout />
+                </Suspense>
+              ),
+              children: [
+                {
+                  path: path.profile,
+                  element: (
+                    <Suspense>
+                      <Profile />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.changePassword,
+                  element: (
+                    <Suspense>
+                      <ChangePasswork />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.historyPurchase,
+                  element: (
+                    <Suspense>
+                      <HistoryPurchase />
+                    </Suspense>
+                  )
+                }
+              ]
+            }
+          ]
+        },
+        {
+          path: '*',
+          element: (
+            <Suspense>
+              <NotFound />
+            </Suspense>
           )
         }
       ]
-    },
-    {
-      path: '*',
-      element: (
-        <Suspense>
-          <NotFound />
-        </Suspense>
-      )
     }
   ])
 

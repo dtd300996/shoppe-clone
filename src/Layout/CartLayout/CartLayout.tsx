@@ -1,14 +1,14 @@
+import { memo } from 'react'
+import { Outlet } from 'react-router-dom'
 import CartHeader from 'src/components/CartHeader'
 import Footer from 'src/components/Footer'
-interface Props {
-  children?: React.ReactNode
-}
-export default function CartLayout({ children }: Props) {
+
+export default memo(function CartLayout() {
   return (
     <div>
       <CartHeader />
-      {children}
+      <Outlet />
       <Footer />
     </div>
   )
-}
+})
