@@ -15,6 +15,7 @@ import { ErrorResponse } from 'src/types/utils.type'
 import { EmailPasswordSchema, schema, Schema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
+export const formSchema = schema.pick(['email', 'password', 'confirm_password'])
 export type FormState = Pick<Schema, 'email' | 'password' | 'confirm_password'>
 
 export default function Register() {
@@ -27,7 +28,7 @@ export default function Register() {
     setError,
     formState: { errors }
   } = useForm<FormState>({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(formSchema)
   })
 
   const resisterAccountMutation = useMutation({
